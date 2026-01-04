@@ -32,6 +32,7 @@ export async function run() {
   await installDeps(projectRoot);
   await setupFormatting(projectRoot);
   await setupTailwind(projectRoot);
+  await setupDefaults(projectRoot, name);
 }
 
 async function cleanup(projectRoot) {
@@ -135,5 +136,38 @@ async function setupTailwind(projectRoot) {
     await writeFile(
         indexCSSPath,
         '@import "tailwindcss";'
+    )
+}
+
+async function setupDefaults(projectRoot, projectName) {
+    // remove html icon
+    console.log("Removing HTML icon and configuring HTML title..");
+
+    const indexHTMLPath = path.join(projectRoot, "index.html");
+
+    await writeFile(
+        indexHTMLPath,
+        `<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>${projectName}</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>`
+    );
+
+    // remove everything from App.tsx
+    // make this acommodate other language options later on
+    console.log("Cleaning up pre-configured src/App.tsx program..");
+
+    const AppPath = path.join(projectRoot, "src", "App.tsx");
+
+    await writeFile(
+        AppPath,
+        'export default function App() {return (<></>);}'
+    );
+
+    // bonus: remove non-null operator in main.tsx
+    console.log("Fixing lint error from non-null operator in main.tsx..");
+
+    const mainPath = path.join(projectRoot, "src", "main.tsx");
+
+    await writeFile(
+        mainPath,
+        'import { StrictMode } from "react";import { createRoot } from "react-dom/client";import "./index.css";import App from "./App.tsx";const root = document.getElementById("root");if(!root) {throw new Error("root element not found");}createRoot(root).render(<StrictMode><App /></StrictMode>,);'
     )
 }
