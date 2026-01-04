@@ -28,6 +28,7 @@ export async function run() {
   console.log(`Entering ${projectRoot}`);
   
   await cleanup(projectRoot);
+  await installDeps(projectRoot);
 }
 
 async function cleanup(projectRoot) {
@@ -66,4 +67,31 @@ async function cleanup(projectRoot) {
   })
 
   console.log("Removed src/App.css");
+}
+
+async function installDeps(projectRoot) {
+  console.log("Installing dev dependencies...");
+
+  await execa(
+    "npm",
+    [
+      "install",
+      "--save-dev",
+      "@tailwindcss/vite",
+      "prettier",
+      "eslint-plugin-prettier",
+      "eslint-config-prettier",
+      "eslint-plugin-react-x",
+      "eslint-plugin-react-dom",
+      "vitest",
+      "jsdom",
+      "@testing-library/react",
+      "@testing-library/jest-dom",
+      "@testing-library/user-event"
+    ],
+    {
+      cwd: projectRoot,
+      stdio: "inherit"
+    }
+  );
 }
