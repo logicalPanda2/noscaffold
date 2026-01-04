@@ -1,0 +1,36 @@
+{
+    "name": "noscaffold",
+    "version": "0.1.0",
+    "description": "Post-scaffold CLI automation tool for React + Vite projects.",
+    "license": "MIT",
+    "author": "logicalPanda2",
+    "type": "module",
+    "private": false,
+    "bin": {
+        "noscaffold": "./bin/index.js"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "engineStrict": true,
+    "scripts": {
+        "test": "node --test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/logicalPanda2/noscaffold"
+    },
+    "bugs": {
+        "url": "https://github.com/logicalPanda2/noscaffold/issues"
+    },
+    "homepage": "https://github.com/logicalPanda2/noscaffold#readme",
+    "files": [
+        "bin",
+        "src"
+    ],
+    "dependencies": {
+        "execa": "^9.6.1",
+        "prompts": "^2.4.2"
+    }
+}
