@@ -169,5 +169,37 @@ async function setupDefaults(projectRoot, projectName) {
     await writeFile(
         mainPath,
         'import { StrictMode } from "react";import { createRoot } from "react-dom/client";import "./index.css";import App from "./App.tsx";const root = document.getElementById("root");if(!root) {throw new Error("root element not found");}createRoot(root).render(<StrictMode><App /></StrictMode>,);'
-    )
+    );
+
+    // setuptests
+    const setupTestsPath = path.join(projectRoot, "src", "setupTests.ts");
+
+    await writeFile(
+        setupTestsPath,
+        'import "@testing-library/jest-dom/vitest";'        
+    );
+
+
+    // import plugins
+    const viteConfigPath = path.join(projectRoot, "vite.config.ts");
+
+    await writeFile(
+        viteConfigPath,
+        'import { defineConfig } from "vitest/config";import react from "@vitejs/plugin-react";import tailwindcss from "@tailwindcss/vite";export default defineConfig({plugins: [react(), tailwindcss()], test: {environment: "jsdom", setupFiles: "./src/setupTests.ts", globals: true,}, });'
+    );
+
+    // adding vitest/globals to tsconfig
+    const appTsConfig = path.join(projectRoot, "tsconfig.app.json");
+
+    await writeFile(
+        appTsConfig,
+        '{"compilerOptions": {"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo","target": "ES2022","useDefineForClassFields": true,"lib": ["ES2022", "DOM", "DOM.Iterable"],"module": "ESNext","types": ["vite/client", "vitest/globals"],"skipLibCheck": true,/* Bundler mode */"moduleResolution": "bundler","allowImportingTsExtensions": true,"verbatimModuleSyntax": true,"moduleDetection": "force","noEmit": true,"jsx": "react-jsx",/* Linting */"strict": true,"noUnusedLocals": true,"noUnusedParameters": true,"erasableSyntaxOnly": true,"noFallthroughCasesInSwitch": true,"noUncheckedSideEffectImports": true},"include": ["src"]}'
+    );
+
+    const eslintConfigPath = path.join(projectRoot, "eslint.config.js");
+
+    await writeFile(
+        eslintConfigPath,
+        "import js from '@eslint/js';import globals from 'globals';import reactHooks from 'eslint-plugin-react-hooks';import reactRefresh from 'eslint-plugin-react-refresh';import tseslint from 'typescript-eslint';import { defineConfig, globalIgnores } from 'eslint/config';import reactX from 'eslint-plugin-react-x';import reactDom from 'eslint-plugin-react-dom';export default defineConfig([globalIgnores(['dist']),{files: ['**/*.{ts,tsx}'],extends: [js.configs.recommended,tseslint.configs.recommended,tseslint.configs.strictTypeChecked,tseslint.configs.stylisticTypeChecked,reactHooks.configs.flat.recommended,reactRefresh.configs.vite,reactX.configs['recommended-typescript'],reactDom.configs.recommended,],languageOptions: {parserOptions: {project: ['./tsconfig.node.json', './tsconfig.app.json'],tsconfigRootDir: import.meta.dirname,},ecmaVersion: 2020,globals: globals.browser,},},])"
+    );
 }
