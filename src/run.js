@@ -355,20 +355,18 @@ async function setupEslintConfig(rootPath) {
 }
 
 async function setupScripts(rootPath) {
-    console.log("Configuring package.json scripts...");
+    console.log("Adding format script...");
+    console.log("Adding test script...");
 
     const packageJsonPath = path.join(rootPath, "package.json");
 
-    const raw = await readFile(packageJsonPath, "utf-8");
-    const pkg = JSON.parse(raw);
+    const packageStr = await readFile(packageJsonPath, "utf-8");
+    const packageJson = JSON.parse(packageStr);
 
-    pkg.scripts ??= {};
+    packageJson.scripts ??= {};
 
-    // Add or override only what we care about
-    pkg.scripts.format = "prettier . --write";
-    pkg.scripts.test = "vitest";
+    packageJson.scripts.format = "prettier . --write";
+    packageJson.scripts.test = "vitest";
 
-    await writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + "\n");
-
-    console.log("package.json scripts updated");
+    await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
 }
