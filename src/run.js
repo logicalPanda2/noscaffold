@@ -270,15 +270,46 @@ async function setupVitePlugins(rootPath) {
     );
 }
 
-async function placeholderName(rootPath) {
-
-    // adding vitest/globals to tsconfig
+async function setupTsConfig(rootPath) {
+    console.log("Adding vitest/globals to tsconfig.app.json...");
+    
     const appTsConfig = path.join(rootPath, "tsconfig.app.json");
 
     await writeFile(
         appTsConfig,
-        '{"compilerOptions": {"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo","target": "ES2022","useDefineForClassFields": true,"lib": ["ES2022", "DOM", "DOM.Iterable"],"module": "ESNext","types": ["vite/client", "vitest/globals"],"skipLibCheck": true,/* Bundler mode */"moduleResolution": "bundler","allowImportingTsExtensions": true,"verbatimModuleSyntax": true,"moduleDetection": "force","noEmit": true,"jsx": "react-jsx",/* Linting */"strict": true,"noUnusedLocals": true,"noUnusedParameters": true,"erasableSyntaxOnly": true,"noFallthroughCasesInSwitch": true,"noUncheckedSideEffectImports": true},"include": ["src"]}',
+        `{
+            "compilerOptions": {
+                "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+                "target": "ES2022",
+                "useDefineForClassFields": true,
+                "lib": ["ES2022", "DOM", "DOM.Iterable"],
+                "module": "ESNext",
+                "types": ["vite/client", "vitest/globals"],
+                "skipLibCheck": true,
+                
+                /* Bundler mode */
+                "moduleResolution": "bundler",
+                "allowImportingTsExtensions": true,
+                "verbatimModuleSyntax": true,
+                "moduleDetection": "force",
+                "noEmit": true,
+                "jsx": "react-jsx",
+                
+                /* Linting */
+                "strict": true,
+                "noUnusedLocals": true,
+                "noUnusedParameters": true,
+                "erasableSyntaxOnly": true,
+                "noFallthroughCasesInSwitch": true,
+                "noUncheckedSideEffectImports": true
+            },
+            "include": ["src"]
+        }`,
     );
+
+}
+
+async function placeholderName() {
 
     const eslintConfigPath = path.join(rootPath, "eslint.config.js");
 
