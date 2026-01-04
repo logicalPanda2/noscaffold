@@ -44,40 +44,40 @@ export async function run() {
         },
     );
 
-    const projectRoot = path.resolve(process.cwd(), name);
+    const rootPath = path.resolve(process.cwd(), name);
 
-    console.log(`Entering ${projectRoot}`);
+    console.log(`Entering ${rootPath}`);
+    console.log("Scaffolding project...");
 
     await execa("npm", ["install"], {
-        cwd: projectRoot,
+        cwd: rootPath,
         stdio: "inherit",
     });
 
-    await cleanup(projectRoot);
-    await installDeps(projectRoot);
-    // ...
-    await setupFormatting(projectRoot);
-    await setupTailwind(projectRoot);
-    await setupDefaults(projectRoot, name);
-    await setupScripts(projectRoot);
+    await cleanup(rootPath);
+    await installDeps(rootPath);
+    await setupFormatting(rootPath);
+    await setupTailwind(rootPath);
+    await setupDefaults(rootPath, name);
+    await setupScripts(rootPath);
 
     await execa("npm", ["run", "format"], {
-        cwd: projectRoot,
+        cwd: rootPath,
         stdio: "inherit",
     });
 
     await execa("git", ["init"], {
-        cwd: projectRoot,
+        cwd: rootPath,
         stdio: "inherit",
     });
 
     await execa("git", ["add", "."], {
-        cwd: projectRoot,
+        cwd: rootPath,
         stdio: "inherit",
     });
 
     await execa("git", ["commit", "-m", "Initial commit"], {
-        cwd: projectRoot,
+        cwd: rootPath,
         stdio: "inherit",
     });
 }
