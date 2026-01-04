@@ -59,6 +59,7 @@ export async function run() {
     await setupFormatting(rootPath);
     await setupTailwind(rootPath);
     await setupHTML(rootPath, name);
+    await setupApp(rootPath);
     await setupDefaults(rootPath);
     await setupScripts(rootPath);
 
@@ -198,25 +199,44 @@ async function setupHTML(rootPath, projectName) {
     );
 }
 
-async function setupDefaults(rootPath) {
-    // remove everything from App.tsx
-    // make this acommodate other language options later on
-    console.log("Cleaning up pre-configured src/App.tsx program..");
+async function setupApp(rootPath) {
+    console.log("Cleaning up pre-configured src/App.tsx program...");
 
     const AppPath = path.join(rootPath, "src", "App.tsx");
 
-    await writeFile(AppPath, "export default function App() {return (<></>);}");
+    await writeFile(
+        AppPath, 
+        `export default function App() {
+            return <></>;
+        }`
+    );
 
-    // bonus: remove non-null operator in main.tsx
-    console.log("Fixing lint error from non-null operator in main.tsx..");
+    console.log("Fixing lint error from non-null operator in src/main.tsx...");
 
     const mainPath = path.join(rootPath, "src", "main.tsx");
 
     await writeFile(
         mainPath,
-        'import { StrictMode } from "react";import { createRoot } from "react-dom/client";import "./index.css";import App from "./App.tsx";const root = document.getElementById("root");if(!root) {throw new Error("root element not found");}createRoot(root).render(<StrictMode><App /></StrictMode>,);',
+        `import { StrictMode } from "react";
+        import { createRoot } from "react-dom/client";
+        import "./index.css";
+        import App from "./App.tsx";
+        
+        const root = document.getElementById("root");
+        
+        if(!root) {
+            throw new Error("root element not found");
+        }
+        
+        createRoot(root).render(
+            <StrictMode>
+                <App />
+            </StrictMode>,
+        );`,
     );
+}
 
+async function setupDefaults(rootPath) {
     // setuptests
     const setupTestsPath = path.join(rootPath, "src", "setupTests.ts");
 
