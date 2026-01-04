@@ -247,13 +247,30 @@ async function setupTests(rootPath) {
     );
 }
 
-async function setupDefaults(rootPath) {
+async function setupVitePlugins(rootPath) {
+    console.log("Adding vite config plugins...");
+    console.log("Setting up testing environment...");
+
     const viteConfigPath = path.join(rootPath, "vite.config.ts");
 
     await writeFile(
         viteConfigPath,
-        'import { defineConfig } from "vitest/config";import react from "@vitejs/plugin-react";import tailwindcss from "@tailwindcss/vite";export default defineConfig({plugins: [react(), tailwindcss()], test: {environment: "jsdom", setupFiles: "./src/setupTests.ts", globals: true,}, });',
+        `import { defineConfig } from "vitest/config";
+        import react from "@vitejs/plugin-react";
+        import tailwindcss from "@tailwindcss/vite";
+        
+        export default defineConfig({
+            plugins: [react(), tailwindcss()],
+            test: {
+                environment: "jsdom", 
+                setupFiles: "./src/setupTests.ts", 
+                globals: true,
+            }, 
+        });`,
     );
+}
+
+async function placeholderName(rootPath) {
 
     // adding vitest/globals to tsconfig
     const appTsConfig = path.join(rootPath, "tsconfig.app.json");
