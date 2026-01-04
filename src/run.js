@@ -236,16 +236,18 @@ async function setupApp(rootPath) {
     );
 }
 
-async function setupDefaults(rootPath) {
-    // setuptests
+async function setupTests(rootPath) {
+    console.log("Creating src/setupTests.ts...");
+
     const setupTestsPath = path.join(rootPath, "src", "setupTests.ts");
 
     await writeFile(
         setupTestsPath,
         'import "@testing-library/jest-dom/vitest";',
     );
+}
 
-    // import plugins
+async function setupDefaults(rootPath) {
     const viteConfigPath = path.join(rootPath, "vite.config.ts");
 
     await writeFile(
