@@ -55,7 +55,7 @@ export async function run() {
     });
 
     await cleanup(rootPath);
-    await installDeps(rootPath);
+    await installDependencies(rootPath);
     await setupFormatting(rootPath);
     await setupTailwind(rootPath);
     await setupHTML(rootPath, name);
@@ -125,7 +125,7 @@ async function cleanup(rootPath) {
     });
 }
 
-async function installDeps(rootPath) {
+async function installDependencies(rootPath) {
     console.log("Installing dev dependencies...");
 
     await execa(
