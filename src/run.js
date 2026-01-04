@@ -18,6 +18,15 @@ export async function run() {
         return;
     }
 
+    /*
+        As of the time of writing, there is no documented way
+        to bypass vite's final interactive prompt:
+        "Install with npm and start now?",
+        and as such the code below uses manual input to skip
+        this prompt, in order to fully automate the
+        scaffolding process.
+    */
+
     await execa(
         "npm",
         [
@@ -30,7 +39,7 @@ export async function run() {
             "--no-rolldown",
         ],
         {
-            input: "n\n", // answer: "No, do not install/start now"
+            input: "n\n",
             stdio: ["pipe", "inherit", "inherit"],
         },
     );
