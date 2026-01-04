@@ -1,5 +1,5 @@
 import prompts from "prompts";
-import { writeFile } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { execa } from "execa";
 import { rm } from "fs/promises";
 import path from "path";
@@ -33,6 +33,42 @@ export async function run() {
   await setupFormatting(projectRoot);
   await setupTailwind(projectRoot);
   await setupDefaults(projectRoot, name);
+  await setupScripts(projectRoot);
+
+  await execa(
+    "npm",
+    ["run", "format"],
+    {
+        cwd: projectRoot,
+        stdio: "inherit"
+    }
+  )
+
+  await execa(
+    "git",
+    ["init"],
+    {
+        cwd: projectRoot,
+        stdio: "inherit"
+    }
+  )
+
+  await execa(
+    "git",
+    ["add", "."],
+    {
+        cwd: projectRoot,
+        stdio: "inherit"
+    }
+  )
+  await execa(
+    "git",
+    ["commit", "-m", "Initial commit"],
+    {
+        cwd: projectRoot,
+        stdio: "inherit"
+    }
+  )
 }
 
 async function cleanup(projectRoot) {
@@ -202,4 +238,26 @@ async function setupDefaults(projectRoot, projectName) {
         eslintConfigPath,
         "import js from '@eslint/js';import globals from 'globals';import reactHooks from 'eslint-plugin-react-hooks';import reactRefresh from 'eslint-plugin-react-refresh';import tseslint from 'typescript-eslint';import { defineConfig, globalIgnores } from 'eslint/config';import reactX from 'eslint-plugin-react-x';import reactDom from 'eslint-plugin-react-dom';export default defineConfig([globalIgnores(['dist']),{files: ['**/*.{ts,tsx}'],extends: [js.configs.recommended,tseslint.configs.recommended,tseslint.configs.strictTypeChecked,tseslint.configs.stylisticTypeChecked,reactHooks.configs.flat.recommended,reactRefresh.configs.vite,reactX.configs['recommended-typescript'],reactDom.configs.recommended,],languageOptions: {parserOptions: {project: ['./tsconfig.node.json', './tsconfig.app.json'],tsconfigRootDir: import.meta.dirname,},ecmaVersion: 2020,globals: globals.browser,},},])"
     );
+}
+
+async function setupScripts(projectRoot) {
+    console.log("Configuring package.json scripts...");
+
+    const packageJsonPath = path.join(projectRoot, "package.json");
+
+    const raw = await readFile(packageJsonPath, "utf-8");
+    const pkg = JSON.parse(raw);
+
+    pkg.scripts ??= {};
+
+    // Add or override only what we care about
+    pkg.scripts.format = "prettier . --write";
+    pkg.scripts.test = "vitest";
+
+    await writeFile(
+        packageJsonPath,
+        JSON.stringify(pkg, null, 2) + "\n"
+    );
+
+    console.log("package.json scripts updated");
 }
