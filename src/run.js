@@ -1,4 +1,5 @@
 import prompts from "prompts";
+import { writeFile } from "fs/promises";
 import { execa } from "execa";
 import { rm } from "fs/promises";
 import path from "path";
@@ -29,6 +30,8 @@ export async function run() {
   
   await cleanup(projectRoot);
   await installDeps(projectRoot);
+  await setupFormatting(projectRoot);
+  await setupTailwind(projectRoot);
 }
 
 async function cleanup(projectRoot) {
@@ -94,4 +97,43 @@ async function installDeps(projectRoot) {
       stdio: "inherit"
     }
   );
+}
+
+async function setupFormatting(projectRoot) {
+  console.log("Setting up Prettier and ESLint formatting...");
+
+  const prettierConfigPath = path.join(projectRoot, ".prettierrc.json");
+  const eslintConfigPath = path.join(projectRoot, ".eslintrc.json");
+
+  const prettierConfig = {
+    useTabs: true,
+    tabWidth: 4
+  };
+
+  const eslintConfig = {
+    extends: ["prettier"]
+  };
+
+  await writeFile(
+    prettierConfigPath,
+    JSON.stringify(prettierConfig)
+  );
+
+  await writeFile(
+    eslintConfigPath,
+    JSON.stringify(eslintConfig)
+  );
+
+  console.log("Formatting configuration written");
+}
+
+async function setupTailwind(projectRoot) {
+    console.log("Importing tailwind in src/index.css");
+
+    const indexCSSPath = path.join(projectRoot, "src", "index.css");
+
+    await writeFile(
+        indexCSSPath,
+        '@import "tailwindcss";'
+    )
 }
