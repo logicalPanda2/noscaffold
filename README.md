@@ -1,8 +1,8 @@
 # noscaffold
-noscaffold is an opinionated, post-scaffold CLI automation tool for React + Vite projects.
+noscaffold is an opinionated, post-scaffold CLI automation tool for React + Vite projects using TypeScript, Tailwind, and Vitest.
 
 It speeds up the setup process by:
-- Skipping interactive vite prompts (defaults to React + TypeScript)
+- Skipping interactive vite prompts
 - Applying tailwind
 - Setting up the testing environment with Vitest
 - Applying the recommended ESLint rules for TypeScript
