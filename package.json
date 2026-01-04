@@ -7,19 +7,18 @@
     "type": "module",
     "private": false,
     "bin": {
-        "noscaffold": "./bin/index.js"
+        "noscaffold": "bin/index.js"
     },
     "engines": {
         "node": ">=18.0.0",
         "npm": ">=9.0.0"
     },
-    "engineStrict": true,
     "scripts": {
         "test": "node --test"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/logicalPanda2/noscaffold"
+        "url": "git+https://github.com/logicalPanda2/noscaffold.git"
     },
     "bugs": {
         "url": "https://github.com/logicalPanda2/noscaffold/issues"
