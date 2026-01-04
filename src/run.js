@@ -18,18 +18,40 @@ export async function run() {
     return;
   }
 
-  await execa(
-    "npm",
-    ["create", "vite@latest", name],
-    { stdio: "inherit" }
-  );
+    await execa(
+  "npm",
+  [
+    "create",
+    "vite@latest",
+    name,
+    "--",
+    "--template",
+    "react-ts",
+    "--no-rolldown"
+  ],
+  {
+    input: "n\n", // answer: "No, do not install/start now"
+    stdio: ["pipe", "inherit", "inherit"]
+  }
+);
 
   const projectRoot = path.resolve(process.cwd(), name);
 
   console.log(`Entering ${projectRoot}`);
+
+  await execa(
+    "npm",
+    ["install"],
+    {
+        cwd: projectRoot,
+        stdio: "inherit",
+    }    
+)
+
   
   await cleanup(projectRoot);
   await installDeps(projectRoot);
+  // ...
   await setupFormatting(projectRoot);
   await setupTailwind(projectRoot);
   await setupDefaults(projectRoot, name);
