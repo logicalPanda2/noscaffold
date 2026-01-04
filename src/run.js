@@ -58,7 +58,8 @@ export async function run() {
     await installDeps(rootPath);
     await setupFormatting(rootPath);
     await setupTailwind(rootPath);
-    await setupDefaults(rootPath, name);
+    await setupHTML(rootPath, name);
+    await setupDefaults(rootPath);
     await setupScripts(rootPath);
 
     await execa("npm", ["run", "format"], {
@@ -174,17 +175,30 @@ async function setupTailwind(rootPath) {
     await writeFile(indexCssPath, '@import "tailwindcss";');
 }
 
-async function setupDefaults(rootPath, projectName) {
-    // remove html icon
-    console.log("Removing HTML icon and configuring HTML title..");
+async function setupHTML(rootPath, projectName) {
+    console.log("Removing pre-configured HTML favicon...");
+    console.log(`Replacing HTML title with ${projectName}...`);
 
     const indexHTMLPath = path.join(rootPath, "index.html");
 
     await writeFile(
         indexHTMLPath,
-        `<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>${projectName}</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>`,
+        `<!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>${projectName}</title>
+            </head>
+            <body>
+                <div id="root"></div>
+                <script type="module" src="./src/main.tsx"></script>
+            </body>
+        </html>`,
     );
+}
 
+async function setupDefaults(rootPath) {
     // remove everything from App.tsx
     // make this acommodate other language options later on
     console.log("Cleaning up pre-configured src/App.tsx program..");
