@@ -13,8 +13,8 @@ export async function run() {
         validate: (value) => (value ? true : "Project name is required"),
     });
 
-    if (!name) {
-        console.log("Aborted.");
+    if (!name.trim()) {
+        console.log("> Aborted.");
         return;
     }
 
@@ -66,6 +66,7 @@ export async function run() {
         cwd: projectRoot,
         stdio: "inherit",
     });
+
     await execa("git", ["commit", "-m", "Initial commit"], {
         cwd: projectRoot,
         stdio: "inherit",
