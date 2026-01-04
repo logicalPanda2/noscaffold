@@ -6,6 +6,21 @@
     "author": "logicalPanda2",
     "type": "module",
     "private": false,
+    "keywords": [
+        "vite",
+        "react",
+        "typescript",
+        "tailwind",
+        "vitest",
+        "eslint",
+        "prettier",
+        "cli",
+        "scaffold",
+        "project-setup",
+        "frontend",
+        "automation",
+        "boilerplate"
+    ],
     "bin": {
         "noscaffold": "bin/index.js"
     },
