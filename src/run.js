@@ -166,12 +166,12 @@ async function setupFormatting(rootPath) {
     await writeFile(eslintConfigPath, JSON.stringify(eslintConfig));
 }
 
-async function setupTailwind(projectRoot) {
+async function setupTailwind(rootPath) {
     console.log("Importing tailwind in src/index.css...");
 
-    const indexCSSPath = path.join(projectRoot, "src", "index.css");
+    const indexCssPath = path.join(rootPath, "src", "index.css");
 
-    await writeFile(indexCSSPath, '@import "tailwindcss";');
+    await writeFile(indexCssPath, '@import "tailwindcss";');
 }
 
 async function setupDefaults(projectRoot, projectName) {
