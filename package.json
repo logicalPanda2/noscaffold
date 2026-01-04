@@ -1,7 +1,7 @@
 {
     "name": "noscaffold",
     "version": "0.1.0",
-    "description": "Post-scaffold CLI automation tool for React + Vite projects.",
+    "description": "Post-scaffold CLI automation tool for React + Vite projects using TypeScript, Tailwind, and Vitest.",
     "license": "MIT",
     "author": "logicalPanda2",
     "type": "module",
