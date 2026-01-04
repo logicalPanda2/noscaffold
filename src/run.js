@@ -174,11 +174,11 @@ async function setupTailwind(rootPath) {
     await writeFile(indexCssPath, '@import "tailwindcss";');
 }
 
-async function setupDefaults(projectRoot, projectName) {
+async function setupDefaults(rootPath, projectName) {
     // remove html icon
     console.log("Removing HTML icon and configuring HTML title..");
 
-    const indexHTMLPath = path.join(projectRoot, "index.html");
+    const indexHTMLPath = path.join(rootPath, "index.html");
 
     await writeFile(
         indexHTMLPath,
@@ -189,14 +189,14 @@ async function setupDefaults(projectRoot, projectName) {
     // make this acommodate other language options later on
     console.log("Cleaning up pre-configured src/App.tsx program..");
 
-    const AppPath = path.join(projectRoot, "src", "App.tsx");
+    const AppPath = path.join(rootPath, "src", "App.tsx");
 
     await writeFile(AppPath, "export default function App() {return (<></>);}");
 
     // bonus: remove non-null operator in main.tsx
     console.log("Fixing lint error from non-null operator in main.tsx..");
 
-    const mainPath = path.join(projectRoot, "src", "main.tsx");
+    const mainPath = path.join(rootPath, "src", "main.tsx");
 
     await writeFile(
         mainPath,
@@ -204,7 +204,7 @@ async function setupDefaults(projectRoot, projectName) {
     );
 
     // setuptests
-    const setupTestsPath = path.join(projectRoot, "src", "setupTests.ts");
+    const setupTestsPath = path.join(rootPath, "src", "setupTests.ts");
 
     await writeFile(
         setupTestsPath,
@@ -212,7 +212,7 @@ async function setupDefaults(projectRoot, projectName) {
     );
 
     // import plugins
-    const viteConfigPath = path.join(projectRoot, "vite.config.ts");
+    const viteConfigPath = path.join(rootPath, "vite.config.ts");
 
     await writeFile(
         viteConfigPath,
@@ -220,14 +220,14 @@ async function setupDefaults(projectRoot, projectName) {
     );
 
     // adding vitest/globals to tsconfig
-    const appTsConfig = path.join(projectRoot, "tsconfig.app.json");
+    const appTsConfig = path.join(rootPath, "tsconfig.app.json");
 
     await writeFile(
         appTsConfig,
         '{"compilerOptions": {"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo","target": "ES2022","useDefineForClassFields": true,"lib": ["ES2022", "DOM", "DOM.Iterable"],"module": "ESNext","types": ["vite/client", "vitest/globals"],"skipLibCheck": true,/* Bundler mode */"moduleResolution": "bundler","allowImportingTsExtensions": true,"verbatimModuleSyntax": true,"moduleDetection": "force","noEmit": true,"jsx": "react-jsx",/* Linting */"strict": true,"noUnusedLocals": true,"noUnusedParameters": true,"erasableSyntaxOnly": true,"noFallthroughCasesInSwitch": true,"noUncheckedSideEffectImports": true},"include": ["src"]}',
     );
 
-    const eslintConfigPath = path.join(projectRoot, "eslint.config.js");
+    const eslintConfigPath = path.join(rootPath, "eslint.config.js");
 
     await writeFile(
         eslintConfigPath,
@@ -235,10 +235,10 @@ async function setupDefaults(projectRoot, projectName) {
     );
 }
 
-async function setupScripts(projectRoot) {
+async function setupScripts(rootPath) {
     console.log("Configuring package.json scripts...");
 
-    const packageJsonPath = path.join(projectRoot, "package.json");
+    const packageJsonPath = path.join(rootPath, "package.json");
 
     const raw = await readFile(packageJsonPath, "utf-8");
     const pkg = JSON.parse(raw);
