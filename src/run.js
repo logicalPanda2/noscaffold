@@ -60,7 +60,10 @@ export async function run() {
     await setupTailwind(rootPath);
     await setupHTML(rootPath, name);
     await setupApp(rootPath);
-    await setupDefaults(rootPath);
+    await setupTests(rootPath);
+    await setupVitePlugins(rootPath);
+    await setupTsConfig(rootPath);
+    await setupEslintConfig(rootPath);
     await setupScripts(rootPath);
 
     await execa("npm", ["run", "format"], {
