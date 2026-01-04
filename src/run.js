@@ -46,8 +46,8 @@ export async function run() {
 
     const rootPath = path.resolve(process.cwd(), name);
 
-    console.log(`Entering ${rootPath}`);
-    console.log("Scaffolding project...");
+    console.log(`> Entering ${rootPath}`);
+    console.log("> Scaffolding project...");
 
     await execa("npm", ["install"], {
         cwd: rootPath,
@@ -66,15 +66,21 @@ export async function run() {
     await setupEslintConfig(rootPath);
     await setupScripts(rootPath);
 
+    console.log("> Formatting...");
+
     await execa("npm", ["run", "format"], {
         cwd: rootPath,
         stdio: "inherit",
     });
 
+    console.log("> Initializing git repository...");
+
     await execa("git", ["init"], {
         cwd: rootPath,
         stdio: "inherit",
     });
+    
+    console.log("> Making initial commit...");
 
     await execa("git", ["add", "."], {
         cwd: rootPath,
@@ -85,10 +91,12 @@ export async function run() {
         cwd: rootPath,
         stdio: "inherit",
     });
+
+    console.log("> Setup finished successfully.");
 }
 
 async function cleanup(rootPath) {
-    console.log("Deleting src/assets...");
+    console.log("> Deleting src/assets...");
 
     const assetsPath = path.join(rootPath, "src", "assets");
 
@@ -97,7 +105,7 @@ async function cleanup(rootPath) {
         force: true,
     });
 
-    console.log("Deleting public...");
+    console.log("> Deleting public...");
 
     const publicPath = path.join(rootPath, "public");
 
@@ -106,7 +114,7 @@ async function cleanup(rootPath) {
         force: true,
     });
 
-    console.log("Deleting pre-configured README...");
+    console.log("> Deleting pre-configured README...");
 
     const readmePath = path.join(rootPath, "README.md");
 
@@ -115,7 +123,7 @@ async function cleanup(rootPath) {
         force: true,
     });
 
-    console.log("Deleting src/App.css...");
+    console.log("> Deleting src/App.css...");
 
     const AppCssPath = path.join(rootPath, "src", "App.css");
 
@@ -126,7 +134,7 @@ async function cleanup(rootPath) {
 }
 
 async function installDevDependencies(rootPath) {
-    console.log("Installing dev dependencies...");
+    console.log("> Installing dev dependencies...");
 
     await execa(
         "npm",
@@ -153,7 +161,7 @@ async function installDevDependencies(rootPath) {
 }
 
 async function setupFormatting(rootPath) {
-    console.log("Setting up Prettier formatting...");
+    console.log("> Setting up Prettier formatting...");
 
     const prettierConfigPath = path.join(rootPath, ".prettierrc.json");
     const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
@@ -172,7 +180,7 @@ async function setupFormatting(rootPath) {
 }
 
 async function setupTailwind(rootPath) {
-    console.log("Importing tailwind in src/index.css...");
+    console.log("> Importing tailwind in src/index.css...");
 
     const indexCssPath = path.join(rootPath, "src", "index.css");
 
@@ -180,8 +188,8 @@ async function setupTailwind(rootPath) {
 }
 
 async function setupHTML(rootPath, projectName) {
-    console.log("Removing pre-configured HTML favicon...");
-    console.log(`Replacing HTML title with ${projectName}...`);
+    console.log("> Removing pre-configured HTML favicon...");
+    console.log(`> Replacing HTML title with ${projectName}...`);
 
     const indexHTMLPath = path.join(rootPath, "index.html");
 
@@ -203,7 +211,7 @@ async function setupHTML(rootPath, projectName) {
 }
 
 async function setupApp(rootPath) {
-    console.log("Cleaning up pre-configured src/App.tsx program...");
+    console.log("> Cleaning up pre-configured src/App.tsx program...");
 
     const AppPath = path.join(rootPath, "src", "App.tsx");
 
@@ -214,7 +222,7 @@ async function setupApp(rootPath) {
         }`
     );
 
-    console.log("Fixing lint error from non-null operator in src/main.tsx...");
+    console.log("> Fixing lint error from non-null operator in src/main.tsx...");
 
     const mainPath = path.join(rootPath, "src", "main.tsx");
 
@@ -240,7 +248,7 @@ async function setupApp(rootPath) {
 }
 
 async function setupTests(rootPath) {
-    console.log("Creating src/setupTests.ts...");
+    console.log("> Creating src/setupTests.ts...");
 
     const setupTestsPath = path.join(rootPath, "src", "setupTests.ts");
 
@@ -251,8 +259,8 @@ async function setupTests(rootPath) {
 }
 
 async function setupVitePlugins(rootPath) {
-    console.log("Adding vite config plugins...");
-    console.log("Setting up testing environment...");
+    console.log("> Adding vite config plugins...");
+    console.log("> Setting up testing environment...");
 
     const viteConfigPath = path.join(rootPath, "vite.config.ts");
 
@@ -274,7 +282,7 @@ async function setupVitePlugins(rootPath) {
 }
 
 async function setupTsConfig(rootPath) {
-    console.log("Adding vitest/globals to tsconfig.app.json...");
+    console.log("> Adding vitest/globals to tsconfig.app.json...");
     
     const appTsConfig = path.join(rootPath, "tsconfig.app.json");
 
@@ -312,7 +320,7 @@ async function setupTsConfig(rootPath) {
 }
 
 async function setupEslintConfig(rootPath) {
-    console.log("Setting up lint rules...");
+    console.log("> Setting up lint rules...");
     
     const eslintConfigPath = path.join(rootPath, "eslint.config.js");
 
@@ -355,8 +363,8 @@ async function setupEslintConfig(rootPath) {
 }
 
 async function setupScripts(rootPath) {
-    console.log("Adding format script...");
-    console.log("Adding test script...");
+    console.log("> Adding format script...");
+    console.log("> Adding test script...");
 
     const packageJsonPath = path.join(rootPath, "package.json");
 
