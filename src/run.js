@@ -82,42 +82,42 @@ export async function run() {
     });
 }
 
-async function cleanup(projectRoot) {
-    const assetsPath = path.join(projectRoot, "src", "assets");
+async function cleanup(rootPath) {
+    console.log("Deleting src/assets...");
+
+    const assetsPath = path.join(rootPath, "src", "assets");
 
     await rm(assetsPath, {
         recursive: true,
         force: true,
     });
 
-    console.log("Removed src/assets");
+    console.log("Deleting public...");
 
-    const publicPath = path.join(projectRoot, "public");
+    const publicPath = path.join(rootPath, "public");
 
     await rm(publicPath, {
         recursive: true,
         force: true,
     });
 
-    console.log("Removed public");
+    console.log("Deleting pre-configured README...");
 
-    const readmePath = path.join(projectRoot, "README.md");
+    const readmePath = path.join(rootPath, "README.md");
 
     await rm(readmePath, {
         recursive: true,
         force: true,
     });
 
-    console.log("Removed README");
+    console.log("Deleting src/App.css...");
 
-    const AppCSSPath = path.join(projectRoot, "src", "App.css");
+    const AppCssPath = path.join(rootPath, "src", "App.css");
 
-    await rm(AppCSSPath, {
+    await rm(AppCssPath, {
         recursive: true,
         force: true,
     });
-
-    console.log("Removed src/App.css");
 }
 
 async function installDeps(projectRoot) {
