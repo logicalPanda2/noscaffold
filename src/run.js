@@ -120,7 +120,7 @@ async function cleanup(rootPath) {
     });
 }
 
-async function installDeps(root) {
+async function installDeps(rootPath) {
     console.log("Installing dev dependencies...");
 
     await execa(
@@ -141,17 +141,17 @@ async function installDeps(root) {
             "@testing-library/user-event",
         ],
         {
-            cwd: root,
+            cwd: rootPath,
             stdio: "inherit",
         },
     );
 }
 
-async function setupFormatting(root) {
+async function setupFormatting(rootPath) {
     console.log("Setting up Prettier formatting...");
 
-    const prettierConfigPath = path.join(root, ".prettierrc.json");
-    const eslintConfigPath = path.join(root, ".eslintrc.json");
+    const prettierConfigPath = path.join(rootPath, ".prettierrc.json");
+    const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
 
     const prettierConfig = {
         useTabs: true,
@@ -167,7 +167,7 @@ async function setupFormatting(root) {
 }
 
 async function setupTailwind(projectRoot) {
-    console.log("Importing tailwind in src/index.css");
+    console.log("Importing tailwind in src/index.css...");
 
     const indexCSSPath = path.join(projectRoot, "src", "index.css");
 
