@@ -27,10 +27,10 @@ export async function run() {
 
   console.log(`Entering ${projectRoot}`);
   
-  await cleanupAssets(projectRoot);
+  await cleanup(projectRoot);
 }
 
-async function cleanupAssets(projectRoot) {
+async function cleanup(projectRoot) {
   const assetsPath = path.join(projectRoot, "src", "assets");
 
   await rm(assetsPath, {
@@ -39,4 +39,31 @@ async function cleanupAssets(projectRoot) {
   });
 
   console.log("Removed src/assets");
+
+  const publicPath = path.join(projectRoot, "public");
+
+  await rm(publicPath, {
+    recursive: true,
+    force: true
+  })
+
+  console.log("Removed public");
+
+  const readmePath = path.join(projectRoot, "README.md");
+
+  await rm(readmePath, {
+    recursive: true,
+    force: true
+  })
+
+  console.log("Removed README");
+
+  const AppCSSPath = path.join(projectRoot, "src", "App.css");
+
+  await rm(AppCSSPath, {
+    recursive: true,
+    force: true
+  })
+
+  console.log("Removed src/App.css");
 }
