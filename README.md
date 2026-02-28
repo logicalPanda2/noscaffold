@@ -1,43 +1,64 @@
 # noscaffold
-noscaffold is an opinionated, post-scaffold CLI automation tool for React + Vite projects using TypeScript, Tailwind, and Vitest.
+
+noscaffold is an opinionated, CLI automation tool for scaffolding various kinds of React projects, such as:
+
+1. React + Vite
+2. React + Next
+3. React + Express (Coming soon)
 
 It speeds up the setup process by:
-- Skipping interactive vite prompts
-- Applying tailwind
-- Setting up the testing environment with Vitest
-- Applying the recommended ESLint rules for TypeScript
-- Removing pre-configured files, folders, and programs
-- Formatting with Prettier
+
+- Defaulting to TypeScript, Tailwind, and Postgres
+- Skipping interactive prompts (if any)
+- Setting up tailwind
+- Setting up the testing environment
+- Setting up ESLint and Prettier
+- Removing pre-configured files, folders, and programs (if any)
+- Applying recommended TypeScript rules
 - Making an initial commit with Git
 
+**noscaffold uses Bun by default.**
+
+## Table of Contents
+
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [1.0.0 Release Notes](#100-release-notes)
+4. [License](#license)
+
 ## Installation
-Installation is optional. noscaffold is meant to be run via `npx`. 
+
+Installation is optional. noscaffold is meant to be run via `npx`/`bunx`:
+
+```
+npx noscaffold || bunx noscaffold
+```
 
 ### Requirements
+
 - Node.js 18+
 - npm 9+
 
 ### Command
+
 ```
 npm install -g noscaffold
 ```
 
 ## Usage
-Run the following command inside the directory you want your project to be in:
-```
-npx noscaffold
-```
-You will then be prompted for a required project name.
 
-Once provided, the tool will start to scaffold and configure the project.
+More detailed usage TBA
 
-When all processes are done, you will see:
-```
-> Setup finished successfully.
-```
+## 1.0.0 Release Notes
+noscaffold 1.0.0 has been officially released on npm!
 
-## Author
-Marcelino Romeo @logicalPanda2 (https://github.com/logicalPanda2)
+Changes:
+1. **New option to scaffold Next.js project**
+2. Code migrated to TypeScript
+3. Use Bun as main package manager
+4. Better TS config rules for React + Vite projects
+5. Clearer and more descriptive messages
 
 ## License
+
 This project is licensed under the <a href="./LICENSE.txt">MIT License</a>.

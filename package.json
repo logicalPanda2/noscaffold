@@ -1,50 +1,59 @@
 {
-    "name": "noscaffold",
-    "version": "0.1.0",
-    "description": "Post-scaffold CLI automation tool for React + Vite projects using TypeScript, Tailwind, and Vitest.",
-    "license": "MIT",
-    "author": "logicalPanda2",
-    "type": "module",
-    "private": false,
-    "keywords": [
-        "vite",
-        "react",
-        "typescript",
-        "tailwind",
-        "vitest",
-        "eslint",
-        "prettier",
-        "cli",
-        "scaffold",
-        "project-setup",
-        "frontend",
-        "automation",
-        "boilerplate"
-    ],
-    "bin": {
-        "noscaffold": "bin/index.js"
-    },
-    "engines": {
-        "node": ">=18.0.0",
-        "npm": ">=9.0.0"
-    },
-    "scripts": {
-        "test": "node --test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/logicalPanda2/noscaffold.git"
-    },
-    "bugs": {
-        "url": "https://github.com/logicalPanda2/noscaffold/issues"
-    },
-    "homepage": "https://github.com/logicalPanda2/noscaffold#readme",
-    "files": [
-        "bin",
-        "src"
-    ],
-    "dependencies": {
-        "execa": "^9.6.1",
-        "prompts": "^2.4.2"
-    }
+	"name": "noscaffold",
+	"version": "1.0.0",
+	"description": "Opinionated CLI automation tool for scaffolding various kinds of React projects.",
+	"license": "MIT",
+	"author": "logicalPanda2",
+	"type": "module",
+	"private": false,
+	"keywords": [
+		"vite",
+		"react",
+		"express",
+		"next",
+		"typescript",
+		"tailwind",
+		"vitest",
+		"eslint",
+		"prettier",
+		"cli",
+		"scaffold",
+		"project-setup",
+		"frontend",
+		"automation",
+		"boilerplate"
+	],
+	"bin": {
+		"noscaffold": "./dist/bin/index.js"
+	},
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=9.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/logicalPanda2/noscaffold.git"
+	},
+	"bugs": {
+		"url": "https://github.com/logicalPanda2/noscaffold/issues"
+	},
+	"homepage": "https://github.com/logicalPanda2/noscaffold#readme",
+	"files": [
+		"./dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"format": "prettier . --write"
+	},
+	"dependencies": {
+		"@types/execa": "^2.0.2",
+		"@types/prompts": "^2.4.9",
+		"execa": "^9.6.1",
+		"prompts": "^2.4.2"
+	},
+	"devDependencies": {
+		"prettier": "^3.8.1",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
+	}
 }
