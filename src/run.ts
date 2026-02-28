@@ -221,7 +221,7 @@ async function setupApp(rootPath: string): Promise<void> {
         
         const root = document.getElementById("root");
         
-        if(!root): Promise<void> {
+        if(!root) {
             throw new Error("Root element not found");
         }
         
