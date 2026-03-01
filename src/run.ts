@@ -73,32 +73,39 @@ export default async function run(): Promise<void> {
 	await addScripts(rootPath);
     logMessage("Added format and test to package.json scripts");
 
-	await execa("bun", ["format"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
-	});
+	await formatAllFiles(rootPath);
     logMessage("Formatted all files");
 
-	await execa("git", ["init"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
-	});
-
-	await execa("git", ["add", "."], {
-	    cwd: rootPath,
-	    stdio: "inherit",
-	});
-
-	await execa("git", ["commit", "-m", "Initial commit"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
-	});
-
+    await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
 }
 
 function logMessage(message: string): void {
 	console.log(`> ${message}`);
+}
+
+async function formatAllFiles(rootPath: string) {
+    await execa("bun", ["format"], {
+	    cwd: rootPath,
+	    stdio: "inherit",
+	});
+}
+
+async function initializeGitRepoAndCommit(rootPath: string) {
+    await execa("git", ["init"], {
+        cwd: rootPath,
+        stdio: "inherit",
+    });
+
+    await execa("git", ["add", "."], {
+        cwd: rootPath,
+        stdio: "inherit",
+    });
+
+    await execa("git", ["commit", "-m", "Initial commit"], {
+        cwd: rootPath,
+        stdio: "inherit",
+    });
 }
 
 async function deletePremadeReactViteFiles(rootPath: string): Promise<void> {
