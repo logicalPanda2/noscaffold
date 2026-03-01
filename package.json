@@ -1,6 +1,6 @@
 {
 	"name": "noscaffold",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Opinionated CLI automation tool for scaffolding various kinds of React projects.",
 	"license": "MIT",
 	"author": "logicalPanda2",
@@ -44,7 +44,7 @@
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier . --write",
-        "prepublishOnly": "npm run build"
+		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
 		"@types/execa": "^2.0.2",
