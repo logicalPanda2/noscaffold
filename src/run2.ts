@@ -39,15 +39,7 @@ export async function createNextProject() {
         process.exit(1);
     }
 
-    await execa(
-        "bunx",
-        [
-            "create-next-app@latest",
-            data.dirName,
-            "--yes",
-            "--skip-install"
-        ]
-    );
+    await initializeNextProject(data.dirName);
 
     const rootPath = path.resolve(process.cwd(), data.dirName);
 
@@ -80,6 +72,18 @@ export async function createNextProject() {
     await addTypeModuleToPackageJson(rootPath);
     await formatAllFiles(rootPath);
     await initializeGitRepoAndCommit(rootPath);
+}
+
+async function initializeNextProject(dirName: string) {
+    await execa(
+        "bunx",
+        [
+            "create-next-app@latest",
+            dirName,
+            "--yes",
+            "--skip-install"
+        ]
+    );
 }
 
 function logMessage(message: string): void {
