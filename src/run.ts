@@ -14,14 +14,8 @@ async function createReactViteProject(): Promise<void> {
 		type: "text",
 		name: "name",
 		message: "Project name:",
-		validate: (value: string) =>
-			value ? true : "Project name is required",
+		validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
 	});
-
-	if (!name.trim()) {
-		logMessage("Aborted");
-		process.exit(1);
-	}
 
 	initializeReactWithVite(name);
 
