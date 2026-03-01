@@ -46,8 +46,15 @@ npm install -g noscaffold
 ```
 
 ## Usage
+```
+npx noscaffold || bunx noscaffold
+```
+Choose one out of the provided options.
 
-More detailed usage TBA
+Wait until the scaffolding process has finished, indicated by the following message:
+```
+> Scaffolding process finished successfully.
+```
 
 ## 1.0.0 Release Notes
 
