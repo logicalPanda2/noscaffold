@@ -6,7 +6,30 @@ import path from "path";
 import process from "process";
 
 export default async function run(): Promise<void> {
-	await createReactViteProject();
+	const { option }: { option: ProjectOption } = await prompts({
+        type: "select",
+        name: "option",
+        message: "Project type:",
+        choices: [
+            {
+                title: "React + Vite",
+                value: "VITE",
+            },
+            {
+                title: "Next.js",
+                value: "NEXT",
+            },
+        ],
+        initial: 0,
+    });
+
+    switch(option) {
+        case "VITE": console.log("Vite chosen");
+        break;
+        case "NEXT": console.log("Next chosen");
+        break;
+        case "EXPRESS": console.log("Express chosen");
+    }
 }
 
 async function createReactViteProject(): Promise<void> {
