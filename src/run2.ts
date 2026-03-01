@@ -44,22 +44,7 @@ export async function createNextProject() {
     const rootPath = path.resolve(process.cwd(), data.dirName);
 
     await installMainDependencies(rootPath);
-
-    await execa(
-        "bun",
-        [
-            "add",
-            "--dev", 
-            "prettier", 
-            "eslint-config-prettier",
-            "eslint-plugin-prettier"
-        ],
-        {
-            cwd: rootPath,
-            stdio: "inherit",
-        }
-    );
-
+    await installAdditionalNextDependencies(rootPath);
     await deletePremadeNextFiles(rootPath);
     await setTailwindAndRootPageDefaults(rootPath);
     await editLayoutMetadata(rootPath, data.title, data.desc);
@@ -78,7 +63,24 @@ async function installMainDependencies(rootPath: string): Promise<void> {
 	});
 }
 
-async function initializeNextProject(dirName: string) {
+async function installAdditionalNextDependencies(rootPath: string): Promise<void> {
+    await execa(
+        "bun",
+        [
+            "add",
+            "--dev", 
+            "prettier", 
+            "eslint-config-prettier",
+            "eslint-plugin-prettier"
+        ],
+        {
+            cwd: rootPath,
+            stdio: "inherit",
+        }
+    );
+}
+
+async function initializeNextProject(dirName: string): Promise<void> {
     await execa(
         "bunx",
         [
