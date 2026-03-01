@@ -6,27 +6,27 @@ import path from "path";
 import process from "process";
 
 export async function createNextProject() {
-    const data = await prompts([
+    const data: Record<"dirName" | "title" | "desc", string> = await prompts([
         {
             type: "text",
             name: "dirName",
             message: "What will be your project's directory name?",
             initial: "my-app",
-            validate: m => !m.trim() ? "Value cannot be empty" : true,
+            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
         },
         {
             type: "text",
             name: "title",
             message: "What will be your project's HTML title?",
             initial: "My App",
-            validate: m => !m.trim() ? "Value cannot be empty" : true,
+            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
         },
         {
             type: "text",
             name: "desc",
             message: "What will be your project's HTML description?",
             initial: "App built with Create Next App",
-            validate: m => !m.trim() ? "Value cannot be empty" : true,
+            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
         }
     ]);
 
@@ -35,6 +35,7 @@ export async function createNextProject() {
         !data.title ||
         !data.desc
     ) {
+        logMessage("Incomplete data. Aborting process");
         process.exit(1);
     }
 
@@ -79,6 +80,10 @@ export async function createNextProject() {
     await addTypeModuleToPackageJson(rootPath);
     await formatAllFiles(rootPath);
     await initializeGitRepoAndCommit(rootPath);
+}
+
+function logMessage(message: string): void {
+	console.log(`> ${message}`);
 }
 
 async function formatAllFiles(rootPath: string): Promise<void> {
