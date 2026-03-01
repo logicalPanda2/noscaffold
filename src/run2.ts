@@ -35,7 +35,6 @@ export async function createNextProject() {
         !data.title ||
         !data.desc
     ) {
-        console.log("> Incomplete Data. Aborting process");
         process.exit(1);
     }
 
@@ -51,8 +50,6 @@ export async function createNextProject() {
 
     const rootPath = path.resolve(process.cwd(), data.dirName);
 
-    console.log(`> Entering ${rootPath}`);
-
     await execa("bun", ["install"], {
         cwd: rootPath,
         stdio: "inherit",
@@ -62,7 +59,7 @@ export async function createNextProject() {
         "bun",
         [
             "add",
-            "-d", 
+            "--dev", 
             "prettier", 
             "eslint-config-prettier",
             "eslint-plugin-prettier"
