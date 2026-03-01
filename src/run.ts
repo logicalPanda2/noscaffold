@@ -84,7 +84,7 @@ async function createReactViteProject(): Promise<void> {
 	await setupVitePlugins(rootPath);
     logMessage("Configured vite plugins");
 
-	await setupTsConfig(rootPath);
+	await setupReactViteTsConfig(rootPath);
     logMessage("Configured TypeScript config rules");
 
 	await setupESLintConfig(rootPath);
@@ -307,7 +307,76 @@ async function setupVitePlugins(rootPath: string): Promise<void> {
 	);
 }
 
-async function setupTsConfig(rootPath: string): Promise<void> {
+async function setupNextTsConfig(rootPath: string): Promise<void> {
+    const tsConfig = path.join(rootPath, "tsconfig.json");
+
+    await writeFile(
+        tsConfig,
+        `{
+            "compilerOptions": {
+                // type checking
+                "allowUnreachableCode": false,
+                "allowUnusedLabels": false,
+                "exactOptionalPropertyTypes": true,
+                "noFallthroughCasesInSwitch": true,
+                "noImplicitReturns": true,
+                "noImplicitOverride": true,
+                "noPropertyAccessFromIndexSignature": false,
+                "noUncheckedIndexedAccess": false,
+                "noUnusedLocals": true,
+                "noUnusedParameters": true,
+
+                // modules
+                "noUncheckedSideEffectImports": true,
+                "allowSyntheticDefaultImports": true,
+                "types": [],
+
+                // emit
+                "declaration": true,
+                "declarationMap": true,
+                "sourceMap": true,
+
+                // other options
+                "verbatimModuleSyntax": true,
+
+                // preset flags
+                "moduleDetection": "force",
+                "target": "ES2017",
+                "lib": ["dom", "dom.iterable", "esnext"],
+                "allowJs": true,
+                "skipLibCheck": true,
+                "strict": true,
+                "noEmit": true,
+                "esModuleInterop": true,
+                "module": "esnext",
+                "moduleResolution": "bundler",
+                "resolveJsonModule": true,
+                "isolatedModules": true,
+                "jsx": "react-jsx",
+                "incremental": true,
+                "plugins": [
+                    {
+                        "name": "next"
+                    }
+                ],
+                "paths": {
+                    "@/*": ["./*"]
+                }
+            },
+            "include": [
+                "next-env.d.ts",
+                "**/*.ts",
+                "**/*.tsx",
+                ".next/types/**/*.ts",
+                ".next/dev/types/**/*.ts",
+                "**/*.mts"
+            ],
+            "exclude": ["node_modules"]
+        }`
+    )
+}
+
+async function setupReactViteTsConfig(rootPath: string): Promise<void> {
 	const appTsConfig = path.join(rootPath, "tsconfig.app.json");
 
 	await writeFile(
@@ -466,6 +535,7 @@ async function createNextProject(): Promise<void> {
     await editLayoutMetadata(rootPath, data.title, data.desc);
     await setupPrettier(rootPath);
     await setupESLintForPrettier(rootPath);
+    await setupNextTsConfig(rootPath);
     await addFormatScriptToPackageJson(rootPath);
     await addTypeModuleToPackageJson(rootPath);
     await formatAllFiles(rootPath);
