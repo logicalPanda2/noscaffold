@@ -17,7 +17,7 @@ async function createReactViteProject(): Promise<void> {
 		validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
 	});
 
-	initializeReactWithVite(name);
+	await initializeReactWithVite(name);
 
 	const rootPath = path.resolve(process.cwd(), name);
 	logMessage(`Project location: ${rootPath}`);
