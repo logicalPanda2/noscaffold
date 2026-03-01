@@ -19,22 +19,12 @@ export default async function run(): Promise<void> {
 		process.exit(1);
 	}
 
-	await execa(
-		"bun",
-		["create", "vite@latest", name, "--template", "react-ts"],
-		{
-			input: "n\n",
-			stdio: ["pipe", "inherit", "inherit"],
-		},
-	);
+	initializeReactWithVite(name);
 
 	const rootPath = path.resolve(process.cwd(), name);
 	logMessage(`Project location: ${rootPath}`);
 
-	await execa("bun", ["install"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
-	});
+	await installMainDependencies(rootPath);
     logMessage("Installed main dependencies");
 
 	await deletePremadeReactViteFiles(rootPath);
@@ -82,6 +72,24 @@ export default async function run(): Promise<void> {
 
 function logMessage(message: string): void {
 	console.log(`> ${message}`);
+}
+
+async function initializeReactWithVite(projectName: string) {
+    await execa(
+		"bun",
+		["create", "vite@latest", projectName, "--template", "react-ts"],
+		{
+			input: "n\n",
+			stdio: ["pipe", "inherit", "inherit"],
+		},
+	);
+}
+
+async function installMainDependencies(rootPath: string) {
+    await execa("bun", ["install"], {
+	    cwd: rootPath,
+	    stdio: "inherit",
+	});
 }
 
 async function formatAllFiles(rootPath: string) {
