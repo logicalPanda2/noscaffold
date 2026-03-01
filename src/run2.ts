@@ -43,10 +43,7 @@ export async function createNextProject() {
 
     const rootPath = path.resolve(process.cwd(), data.dirName);
 
-    await execa("bun", ["install"], {
-        cwd: rootPath,
-        stdio: "inherit",
-    });
+    await installMainDependencies(rootPath);
 
     await execa(
         "bun",
@@ -72,6 +69,13 @@ export async function createNextProject() {
     await addTypeModuleToPackageJson(rootPath);
     await formatAllFiles(rootPath);
     await initializeGitRepoAndCommit(rootPath);
+}
+
+async function installMainDependencies(rootPath: string): Promise<void> {
+    await execa("bun", ["install"], {
+	    cwd: rootPath,
+	    stdio: "inherit",
+	});
 }
 
 async function initializeNextProject(dirName: string) {
