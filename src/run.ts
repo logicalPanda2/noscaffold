@@ -527,19 +527,43 @@ async function createNextProject(): Promise<void> {
     await initializeNextProject(data.dirName);
 
     const rootPath = path.resolve(process.cwd(), data.dirName);
+    logMessage(`Project location: ${rootPath}`);
 
     await installMainDependencies(rootPath);
+    logMessage("Installed main dependencies");
+
     await installAdditionalNextDependencies(rootPath);
+    logMessage("Installed additional dev dependencies");
+    
     await deletePremadeNextFiles(rootPath);
+    logMessage("Deleted pre-configured files and folders");
+    
     await setTailwindAndRootPageDefaults(rootPath);
+    logMessage("Set up tailwind and cleaned up page.tsx");
+    
     await editLayoutMetadata(rootPath, data.title, data.desc);
+    logMessage("Edited HTML to match title and description with provided values");
+    
     await setupPrettier(rootPath);
+    logMessage("Configured Prettier settings");
+    
     await setupESLintForPrettier(rootPath);
+    logMessage("Configured ESLint for Prettier");
+    
     await setupNextTsConfig(rootPath);
+    logMessage("Configured TypeScript config rules");
+
     await addFormatScriptToPackageJson(rootPath);
+    logMessage("Added format script to package.json");
+    
     await addTypeModuleToPackageJson(rootPath);
+    logMessage("Added type module to package.json");
+    
     await formatAllFiles(rootPath);
+    logMessage("Formatted all files");
+    
     await initializeGitRepoAndCommit(rootPath);
+    logMessage("Scaffolding process finished successfully.");
 }
 
 async function installAdditionalNextDependencies(rootPath: string): Promise<void> {
