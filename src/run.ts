@@ -58,7 +58,7 @@ async function createReactViteProject(): Promise<void> {
 	await setupESLintConfig(rootPath);
     logMessage("Configured ESLint lint rules");
 
-	await addScripts(rootPath);
+	await addScriptsToPackageJson(rootPath);
     logMessage("Added format and test to package.json scripts");
 
 	await formatAllFiles(rootPath);
@@ -375,7 +375,7 @@ async function setupESLintConfig(rootPath: string): Promise<void> {
 	);
 }
 
-async function addScripts(rootPath: string): Promise<void> {
+async function addScriptsToPackageJson(rootPath: string): Promise<void> {
 	const packageJsonPath = path.join(rootPath, "package.json");
 
 	const packageStr = await readFile(packageJsonPath, "utf-8");
