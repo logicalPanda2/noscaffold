@@ -50,9 +50,11 @@ npm install -g noscaffold
 More detailed usage TBA
 
 ## 1.0.0 Release Notes
+
 noscaffold 1.0.0 has been officially released on npm!
 
 Changes:
+
 1. **New option to scaffold Next.js project**
 2. Code migrated to TypeScript
 3. Use Bun as main package manager

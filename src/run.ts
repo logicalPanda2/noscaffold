@@ -7,46 +7,50 @@ import process from "process";
 
 export default async function run(): Promise<void> {
 	const { option }: { option: ProjectOption } = await prompts({
-        type: "select",
-        name: "option",
-        message: "Project type:",
-        choices: [
-            {
-                title: "React + Vite",
-                value: "VITE",
-            },
-            {
-                title: "Next.js",
-                value: "NEXT",
-            },
-            {
-                title: "React + Express (Coming soon)",
-                value: "EXPRESS",
-                disabled: true,
-            },
-        ],
-        initial: 0,
-    });
+		type: "select",
+		name: "option",
+		message: "Project type:",
+		choices: [
+			{
+				title: "React + Vite",
+				value: "VITE",
+			},
+			{
+				title: "Next.js",
+				value: "NEXT",
+			},
+			{
+				title: "React + Express (Coming soon)",
+				value: "EXPRESS",
+				disabled: true,
+			},
+		],
+		initial: 0,
+	});
 
-    switch(option) {
-        case "VITE": await createReactViteProject();
-        break;
-        case "NEXT": await createNextProject();
-        break;
-        case "EXPRESS": await createReactExpressProject();
-    }
+	switch (option) {
+		case "VITE":
+			await createReactViteProject();
+			break;
+		case "NEXT":
+			await createNextProject();
+			break;
+		case "EXPRESS":
+			await createReactExpressProject();
+	}
 }
 
 async function createReactExpressProject(): Promise<void> {
-    console.log("How did we get here?");
+	console.log("How did we get here?");
 }
 
 async function createReactViteProject(): Promise<void> {
-    const { name }: { name: string } = await prompts({
+	const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
 		message: "Project name:",
-		validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
+		validate: (str: string) =>
+			!str.trim() ? "Value cannot be empty" : true,
 	});
 
 	await initializeReactWithVite(name);
@@ -55,48 +59,48 @@ async function createReactViteProject(): Promise<void> {
 	logMessage(`Project location: ${rootPath}`);
 
 	await installMainDependencies(rootPath);
-    logMessage("Installed main dependencies");
+	logMessage("Installed main dependencies");
 
 	await deletePremadeReactViteFiles(rootPath);
-    logMessage("Deleted pre-configured files and folders");
+	logMessage("Deleted pre-configured files and folders");
 
 	await setupPrettier(rootPath);
-    logMessage("Configured Prettier settings");
+	logMessage("Configured Prettier settings");
 
-    await setupESLintForPrettier(rootPath);
-    logMessage("Configured ESLint for Prettier");
+	await setupESLintForPrettier(rootPath);
+	logMessage("Configured ESLint for Prettier");
 
-    await installAdditionalReactViteDependencies(rootPath);
-    logMessage("Installed additional dev dependencies");
+	await installAdditionalReactViteDependencies(rootPath);
+	logMessage("Installed additional dev dependencies");
 
 	await setupTailwindImports(rootPath);
-    logMessage("Changed tailwind imports on index.css");
+	logMessage("Changed tailwind imports on index.css");
 
 	await setupHTML(rootPath, name);
-    logMessage("Changed index.html file");
+	logMessage("Changed index.html file");
 
 	await setupApp(rootPath);
-    logMessage("Cleaned up App.tsx");
+	logMessage("Cleaned up App.tsx");
 
 	await setupTests(rootPath);
-    logMessage("Set up testing environment");
+	logMessage("Set up testing environment");
 
 	await setupVitePlugins(rootPath);
-    logMessage("Configured vite plugins");
+	logMessage("Configured vite plugins");
 
 	await setupReactViteTsConfig(rootPath);
-    logMessage("Configured TypeScript config rules");
+	logMessage("Configured TypeScript config rules");
 
 	await setupESLintConfig(rootPath);
-    logMessage("Configured ESLint lint rules");
+	logMessage("Configured ESLint lint rules");
 
 	await addScriptsToPackageJson(rootPath);
-    logMessage("Added format and test to package.json scripts");
+	logMessage("Added format and test to package.json scripts");
 
 	await formatAllFiles(rootPath);
-    logMessage("Formatted all files");
+	logMessage("Formatted all files");
 
-    await initializeGitRepoAndCommit(rootPath);
+	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
 }
 
@@ -105,7 +109,7 @@ function logMessage(message: string): void {
 }
 
 async function initializeReactWithVite(projectName: string): Promise<void> {
-    await execa(
+	await execa(
 		"bun",
 		["create", "vite@latest", projectName, "--template", "react-ts"],
 		{
@@ -116,34 +120,34 @@ async function initializeReactWithVite(projectName: string): Promise<void> {
 }
 
 async function installMainDependencies(rootPath: string): Promise<void> {
-    await execa("bun", ["install"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
+	await execa("bun", ["install"], {
+		cwd: rootPath,
+		stdio: "inherit",
 	});
 }
 
 async function formatAllFiles(rootPath: string): Promise<void> {
-    await execa("bun", ["format"], {
-	    cwd: rootPath,
-	    stdio: "inherit",
+	await execa("bun", ["format"], {
+		cwd: rootPath,
+		stdio: "inherit",
 	});
 }
 
 async function initializeGitRepoAndCommit(rootPath: string): Promise<void> {
-    await execa("git", ["init"], {
-        cwd: rootPath,
-        stdio: "inherit",
-    });
+	await execa("git", ["init"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
 
-    await execa("git", ["add", "."], {
-        cwd: rootPath,
-        stdio: "inherit",
-    });
+	await execa("git", ["add", "."], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
 
-    await execa("git", ["commit", "-m", "Initial commit"], {
-        cwd: rootPath,
-        stdio: "inherit",
-    });
+	await execa("git", ["commit", "-m", "Initial commit"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
 }
 
 async function deletePremadeReactViteFiles(rootPath: string): Promise<void> {
@@ -183,15 +187,17 @@ async function setupPrettier(rootPath: string): Promise<void> {
 }
 
 async function setupESLintForPrettier(rootPath: string): Promise<void> {
-    const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
-    const eslintConfig = {
+	const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
+	const eslintConfig = {
 		extends: ["prettier"],
 	};
 
-    await writeFile(eslintConfigPath, JSON.stringify(eslintConfig));
+	await writeFile(eslintConfigPath, JSON.stringify(eslintConfig));
 }
 
-async function installAdditionalReactViteDependencies(rootPath: string): Promise<void> {
+async function installAdditionalReactViteDependencies(
+	rootPath: string,
+): Promise<void> {
 	await execa(
 		"bun",
 		[
@@ -231,11 +237,13 @@ async function setupHTML(rootPath: string, projectName: string): Promise<void> {
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>${
-                    projectName.split(/[\-_ ]/)
-                    .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
-                    .join(" ")
-                }</title>
+                <title>${projectName
+					.split(/[\-_ ]/)
+					.map(
+						(word) =>
+							word[0].toUpperCase() + word.slice(1).toLowerCase(),
+					)
+					.join(" ")}</title>
             </head>
             <body>
                 <div id="root"></div>
@@ -308,11 +316,11 @@ async function setupVitePlugins(rootPath: string): Promise<void> {
 }
 
 async function setupNextTsConfig(rootPath: string): Promise<void> {
-    const tsConfig = path.join(rootPath, "tsconfig.json");
+	const tsConfig = path.join(rootPath, "tsconfig.json");
 
-    await writeFile(
-        tsConfig,
-        `{
+	await writeFile(
+		tsConfig,
+		`{
             "compilerOptions": {
                 // type checking
                 "allowUnreachableCode": false,
@@ -372,8 +380,8 @@ async function setupNextTsConfig(rootPath: string): Promise<void> {
                 "**/*.mts"
             ],
             "exclude": ["node_modules"]
-        }`
-    )
+        }`,
+	);
 }
 
 async function setupReactViteTsConfig(rootPath: string): Promise<void> {
@@ -491,172 +499,178 @@ async function addScriptsToPackageJson(rootPath: string): Promise<void> {
 }
 
 async function createNextProject(): Promise<void> {
-    const data: Record<"dirName" | "title" | "desc", string> = await prompts([
-        {
-            type: "text",
-            name: "dirName",
-            message: "What will be your project's directory name?",
-            initial: "my-app",
-            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
-        },
-        {
-            type: "text",
-            name: "title",
-            message: "What will be your project's HTML title?",
-            initial: "My App",
-            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
-        },
-        {
-            type: "text",
-            name: "desc",
-            message: "What will be your project's HTML description?",
-            initial: "App built with Create Next App",
-            validate: (str: string) => !str.trim() ? "Value cannot be empty" : true,
-        }
-    ]);
+	const data: Record<"dirName" | "title" | "desc", string> = await prompts([
+		{
+			type: "text",
+			name: "dirName",
+			message: "What will be your project's directory name?",
+			initial: "my-app",
+			validate: (str: string) =>
+				!str.trim() ? "Value cannot be empty" : true,
+		},
+		{
+			type: "text",
+			name: "title",
+			message: "What will be your project's HTML title?",
+			initial: "My App",
+			validate: (str: string) =>
+				!str.trim() ? "Value cannot be empty" : true,
+		},
+		{
+			type: "text",
+			name: "desc",
+			message: "What will be your project's HTML description?",
+			initial: "App built with Create Next App",
+			validate: (str: string) =>
+				!str.trim() ? "Value cannot be empty" : true,
+		},
+	]);
 
-    if(
-        !data.dirName ||
-        !data.title ||
-        !data.desc
-    ) {
-        logMessage("Incomplete data. Aborting process");
-        process.exit(1);
-    }
+	if (!data.dirName || !data.title || !data.desc) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
 
-    await initializeNextProject(data.dirName);
+	await initializeNextProject(data.dirName);
 
-    const rootPath = path.resolve(process.cwd(), data.dirName);
-    logMessage(`Project location: ${rootPath}`);
+	const rootPath = path.resolve(process.cwd(), data.dirName);
+	logMessage(`Project location: ${rootPath}`);
 
-    await installMainDependencies(rootPath);
-    logMessage("Installed main dependencies");
+	await installMainDependencies(rootPath);
+	logMessage("Installed main dependencies");
 
-    await installAdditionalNextDependencies(rootPath);
-    logMessage("Installed additional dev dependencies");
-    
-    await deletePremadeNextFiles(rootPath);
-    logMessage("Deleted pre-configured files and folders");
-    
-    await setTailwindAndRootPageDefaults(rootPath);
-    logMessage("Set up tailwind and cleaned up page.tsx");
-    
-    await editLayoutMetadata(rootPath, data.title, data.desc);
-    logMessage("Edited HTML to match title and description with provided values");
-    
-    await setupPrettier(rootPath);
-    logMessage("Configured Prettier settings");
-    
-    await setupESLintForPrettier(rootPath);
-    logMessage("Configured ESLint for Prettier");
-    
-    await setupNextTsConfig(rootPath);
-    logMessage("Configured TypeScript config rules");
+	await installAdditionalNextDependencies(rootPath);
+	logMessage("Installed additional dev dependencies");
 
-    await addFormatScriptToPackageJson(rootPath);
-    logMessage("Added format script to package.json");
-    
-    await addTypeModuleToPackageJson(rootPath);
-    logMessage("Added type module to package.json");
-    
-    await formatAllFiles(rootPath);
-    logMessage("Formatted all files");
-    
-    await initializeGitRepoAndCommit(rootPath);
-    logMessage("Scaffolding process finished successfully.");
+	await deletePremadeNextFiles(rootPath);
+	logMessage("Deleted pre-configured files and folders");
+
+	await setTailwindAndRootPageDefaults(rootPath);
+	logMessage("Set up tailwind and cleaned up page.tsx");
+
+	await editLayoutMetadata(rootPath, data.title, data.desc);
+	logMessage(
+		"Edited HTML to match title and description with provided values",
+	);
+
+	await setupPrettier(rootPath);
+	logMessage("Configured Prettier settings");
+
+	await setupESLintForPrettier(rootPath);
+	logMessage("Configured ESLint for Prettier");
+
+	await setupNextTsConfig(rootPath);
+	logMessage("Configured TypeScript config rules");
+
+	await addFormatScriptToPackageJson(rootPath);
+	logMessage("Added format script to package.json");
+
+	await addTypeModuleToPackageJson(rootPath);
+	logMessage("Added type module to package.json");
+
+	await formatAllFiles(rootPath);
+	logMessage("Formatted all files");
+
+	await initializeGitRepoAndCommit(rootPath);
+	logMessage("Scaffolding process finished successfully.");
 }
 
-async function installAdditionalNextDependencies(rootPath: string): Promise<void> {
-    await execa(
-        "bun",
-        [
-            "add",
-            "--dev", 
-            "prettier", 
-            "eslint-config-prettier",
-            "eslint-plugin-prettier"
-        ],
-        {
-            cwd: rootPath,
-            stdio: "inherit",
-        }
-    );
+async function installAdditionalNextDependencies(
+	rootPath: string,
+): Promise<void> {
+	await execa(
+		"bun",
+		[
+			"add",
+			"--dev",
+			"prettier",
+			"eslint-config-prettier",
+			"eslint-plugin-prettier",
+		],
+		{
+			cwd: rootPath,
+			stdio: "inherit",
+		},
+	);
 }
 
 async function initializeNextProject(dirName: string): Promise<void> {
-    await execa(
-        "bunx",
-        [
-            "create-next-app@latest",
-            dirName,
-            "--yes",
-            "--skip-install"
-        ]
-    );
+	await execa("bunx", [
+		"create-next-app@latest",
+		dirName,
+		"--yes",
+		"--skip-install",
+	]);
 }
 
 async function deletePremadeNextFiles(rootPath: string): Promise<void> {
-    const publicPath = path.join(rootPath, "public");
-    await rm(publicPath, {
-        recursive: true,
-        force: true,
-    });
+	const publicPath = path.join(rootPath, "public");
+	await rm(publicPath, {
+		recursive: true,
+		force: true,
+	});
 
-    const readmePath = path.join(rootPath, "README.md");
-    await rm(readmePath, {
-        recursive: true,
-        force: true,
-    });
+	const readmePath = path.join(rootPath, "README.md");
+	await rm(readmePath, {
+		recursive: true,
+		force: true,
+	});
 
-    const gitPath = path.join(rootPath, ".git");
-    await rm(gitPath, {
-        recursive: true,
-        force: true,
-    });
+	const gitPath = path.join(rootPath, ".git");
+	await rm(gitPath, {
+		recursive: true,
+		force: true,
+	});
 }
 
 async function addFormatScriptToPackageJson(rootPath: string): Promise<void> {
-    const packageJsonPath = path.join(rootPath, "package.json");
+	const packageJsonPath = path.join(rootPath, "package.json");
 
-    const packageStr = await readFile(packageJsonPath, "utf-8");
-    const packageJson = JSON.parse(packageStr);
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
 
-    packageJson.scripts ??= {};
+	packageJson.scripts ??= {};
 
-    packageJson.scripts.format = "prettier . --write";
+	packageJson.scripts.format = "prettier . --write";
 
-    await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
 }
 
 async function addTypeModuleToPackageJson(rootPath: string): Promise<void> {
-    const packageJsonPath = path.join(rootPath, "package.json");
+	const packageJsonPath = path.join(rootPath, "package.json");
 
-    const packageStr = await readFile(packageJsonPath, "utf-8");
-    const packageJson = JSON.parse(packageStr);
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
 
-    packageJson.type = "module";
+	packageJson.type = "module";
 
-    await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
 }
 
-async function editLayoutMetadata(rootPath: string, title: string, desc: string): Promise<void> {
-    const layoutPath = path.join(rootPath, "app", "layout.tsx");
-    const layoutStr = await readFile(layoutPath, "utf-8");
+async function editLayoutMetadata(
+	rootPath: string,
+	title: string,
+	desc: string,
+): Promise<void> {
+	const layoutPath = path.join(rootPath, "app", "layout.tsx");
+	const layoutStr = await readFile(layoutPath, "utf-8");
 
-    const updatedTitle = layoutStr.replace(/create next app/i, title);
-    const updatedDesc = updatedTitle.replace(/generated by create next app/i, desc);
+	const updatedTitle = layoutStr.replace(/create next app/i, title);
+	const updatedDesc = updatedTitle.replace(
+		/generated by create next app/i,
+		desc,
+	);
 
-    await writeFile(layoutPath, updatedDesc);
+	await writeFile(layoutPath, updatedDesc);
 }
 
 async function setTailwindAndRootPageDefaults(rootPath: string): Promise<void> {
-    const pagePath = path.join(rootPath, "app", "page.tsx");
-    await writeFile(pagePath, 
-        `export default function Home() { return <></>; }`
-    );
+	const pagePath = path.join(rootPath, "app", "page.tsx");
+	await writeFile(
+		pagePath,
+		`export default function Home() { return <></>; }`,
+	);
 
-    const cssPath = path.join(rootPath, "app", "globals.css");
-    await writeFile(cssPath, 
-        `@import "tailwindcss"`
-    );
+	const cssPath = path.join(rootPath, "app", "globals.css");
+	await writeFile(cssPath, `@import "tailwindcss"`);
 }
