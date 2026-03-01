@@ -6,7 +6,11 @@ import path from "path";
 import process from "process";
 
 export default async function run(): Promise<void> {
-	const { name }: { name: string } = await prompts({
+	await createReactViteProject();
+}
+
+async function createReactViteProject(): Promise<void> {
+    const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
 		message: "Project name:",
@@ -74,7 +78,7 @@ function logMessage(message: string): void {
 	console.log(`> ${message}`);
 }
 
-async function initializeReactWithVite(projectName: string) {
+async function initializeReactWithVite(projectName: string): Promise<void> {
     await execa(
 		"bun",
 		["create", "vite@latest", projectName, "--template", "react-ts"],
@@ -85,21 +89,21 @@ async function initializeReactWithVite(projectName: string) {
 	);
 }
 
-async function installMainDependencies(rootPath: string) {
+async function installMainDependencies(rootPath: string): Promise<void> {
     await execa("bun", ["install"], {
 	    cwd: rootPath,
 	    stdio: "inherit",
 	});
 }
 
-async function formatAllFiles(rootPath: string) {
+async function formatAllFiles(rootPath: string): Promise<void> {
     await execa("bun", ["format"], {
 	    cwd: rootPath,
 	    stdio: "inherit",
 	});
 }
 
-async function initializeGitRepoAndCommit(rootPath: string) {
+async function initializeGitRepoAndCommit(rootPath: string): Promise<void> {
     await execa("git", ["init"], {
         cwd: rootPath,
         stdio: "inherit",
