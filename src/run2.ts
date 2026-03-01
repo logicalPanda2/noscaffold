@@ -5,7 +5,7 @@ import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
 
-async function createNextProject() {
+export async function createNextProject() {
     const data = await prompts([
         {
             type: "text",
@@ -33,8 +33,7 @@ async function createNextProject() {
     if(
         !data.dirName ||
         !data.title ||
-        !data.desc ||
-        !data.includeDevNotes
+        !data.desc
     ) {
         console.log("> Incomplete Data. Aborting process");
         process.exit(1);
@@ -74,16 +73,22 @@ async function createNextProject() {
         }
     );
 
-    await cleanup(rootPath);
-    await setDefaults(rootPath);
+    await deletePremadeNextFiles(rootPath);
+    await setTailwindAndRootPageDefaults(rootPath);
     await editLayoutMetadata(rootPath, data.title, data.desc);
-    await setupFormatting(rootPath);
-    await addFormatScript(rootPath);
-    await addTypeModule(rootPath);
-
+    await setupPrettier(rootPath);
+    await setupESLintForPrettier(rootPath);
+    await addFormatScriptToPackageJson(rootPath);
+    await addTypeModuleToPackageJson(rootPath);
     await formatAllFiles(rootPath);
+    await initializeGitRepoAndCommit(rootPath);
+}
 
-    await initializeRepo(rootPath);
+async function formatAllFiles(rootPath: string): Promise<void> {
+    await execa("bun", ["format"], {
+	    cwd: rootPath,
+	    stdio: "inherit",
+	});
 }
 
 async function deletePremadeNextFiles(rootPath: string): Promise<void> {
