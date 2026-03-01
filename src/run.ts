@@ -258,7 +258,7 @@ async function setupApp(rootPath: string): Promise<void> {
 
 	await writeFile(
 		AppPath,
-		`export default function App(): Promise<void> {
+		`export default function App() {
             return <></>;
         }`,
 	);
