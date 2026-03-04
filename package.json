@@ -47,7 +47,6 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"@types/execa": "^2.0.2",
 		"@types/prompts": "^2.4.9",
 		"execa": "^9.6.1",
 		"prompts": "^2.4.2"
