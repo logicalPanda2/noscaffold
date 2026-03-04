@@ -68,7 +68,7 @@ Changes:
 4. Better TS config rules for React + Vite projects
 5. Clearer and more descriptive messages
 
-## 1.0.4 Bugfixes
+### 1.0.4 Bugfixes
 
 Fixed an error where TypeScript would flag the globals.css import on Next.js projects.
 
