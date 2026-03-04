@@ -23,7 +23,7 @@ It speeds up the setup process by:
 
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [1.0.2 Release Notes](#102-release-notes)
+3. [1.0.3 Release Notes](#103-release-notes)
 4. [License](#license)
 
 ## Installation
@@ -56,9 +56,9 @@ Wait until the scaffolding process has finished, indicated by the following mess
 > Scaffolding process finished successfully.
 ```
 
-## 1.0.2 Release Notes
+## 1.0.3 Release Notes
 
-noscaffold 1.0.2 has been officially released on npm!
+noscaffold 1.0.3 has been officially released on npm!
 
 Changes:
 
