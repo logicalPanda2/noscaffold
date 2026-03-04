@@ -568,6 +568,9 @@ async function createNextProject(): Promise<void> {
 	await addTypeModuleToPackageJson(rootPath);
 	logMessage("Added type module to package.json");
 
+    await fixCSSImportError(rootPath);
+    logMessage("Fixed TS error for globals.css import");
+
 	await formatAllFiles(rootPath);
 	logMessage("Formatted all files");
 
@@ -662,6 +665,19 @@ async function editLayoutMetadata(
 	);
 
 	await writeFile(layoutPath, updatedDesc);
+}
+
+async function fixCSSImportError(rootPath: string) {
+    const typedefPath = path.join(rootPath, "types", "css.d.ts");
+	await writeFile(
+		typedefPath,
+		`declare module '*.css';
+
+        declare module '*.module.css' {
+            const classes: { readonly [key: string]: string };
+            export default classes;
+        }`,
+	);
 }
 
 async function setTailwindAndRootPageDefaults(rootPath: string): Promise<void> {
