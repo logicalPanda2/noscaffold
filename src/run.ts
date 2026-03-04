@@ -1,6 +1,6 @@
 import { execa } from "execa";
 import prompts from "prompts";
-import { readFile, writeFile } from "fs/promises";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
@@ -668,6 +668,10 @@ async function editLayoutMetadata(
 }
 
 async function fixCSSImportError(rootPath: string) {
+    await mkdir(path.resolve(rootPath, "types"), {
+        recursive: true,
+    });
+
     const typedefPath = path.join(rootPath, "types", "css.d.ts");
 	await writeFile(
 		typedefPath,

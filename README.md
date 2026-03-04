@@ -23,7 +23,7 @@ It speeds up the setup process by:
 
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [1.0.3 Release Notes](#103-release-notes)
+3. [1.0.0 Release Notes](#100-release-notes)
 4. [License](#license)
 
 ## Installation
@@ -56,9 +56,9 @@ Wait until the scaffolding process has finished, indicated by the following mess
 > Scaffolding process finished successfully.
 ```
 
-## 1.0.3 Release Notes
+## 1.0.0 Release Notes
 
-noscaffold 1.0.3 has been officially released on npm!
+noscaffold 1.0.0 has been officially released on npm!
 
 Changes:
 
@@ -67,6 +67,10 @@ Changes:
 3. Use Bun as main package manager
 4. Better TS config rules for React + Vite projects
 5. Clearer and more descriptive messages
+
+## 1.0.4 Bugfixes
+
+Fixed an error where TypeScript would flag the globals.css import on Next.js projects.
 
 ## License
 
