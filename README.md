@@ -72,6 +72,10 @@ Changes:
 
 Fixed an error where TypeScript would flag the globals.css import on Next.js projects.
 
+### Note on older versions
+
+**Do not use versions before 1.0.4, as there are unfixed bugs. The functionality on 1.0.4 is the same as on any other version(s).**
+
 ## License
 
 This project is licensed under the <a href="./LICENSE.txt">MIT License</a>.
