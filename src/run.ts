@@ -111,40 +111,14 @@ async function createReactExpressProject(): Promise<void> {
     logMessage("Scaffolding process finished successfully.");
 }
 
-async function initializeExpressProject(name: string, pathParam: string): Promise<void> {
-    const backendPath = path.resolve(pathParam, name);
-    await mkdir(backendPath, {
-        recursive: true
-    });
-
-    const srcPath = path.resolve(backendPath, "src");
-    await mkdir(srcPath, {
-        recursive: true,
-    });
-
-    await mkdir(path.resolve(srcPath, "config"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "db"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "features"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "types"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "shared"), {
-        recursive: true,
-    });
-    logMessage("Backend: Initialized file system structure");
-
+async function initializeDefaultPackageJson(rootPath: string) {
     await execa("npm", ["init", "-y"], {
-        cwd: backendPath,
+        cwd: rootPath,
         stdio: "inherit",
     });
-    logMessage("Backend: Initialized package.json");
+}
 
+async function installExpressDeps(rootPath: string) {
     await execa(
         "bun", 
         [
@@ -157,12 +131,13 @@ async function initializeExpressProject(name: string, pathParam: string): Promis
             "express",
         ], 
         {
-			cwd: backendPath,
+			cwd: rootPath,
 			stdio: "inherit",
 		},
     );
-    logMessage("Backend: Installed main dependencies");
+}
 
+async function installExpressDevDeps(rootPath: string) {
     await execa(
         "bun",
         [
@@ -178,43 +153,20 @@ async function initializeExpressProject(name: string, pathParam: string): Promis
             "typescript",
         ],
         {
-			cwd: backendPath,
+			cwd: rootPath,
 			stdio: "inherit",
 		},
     );
-    logMessage("Backend: Installed additional dev dependencies");
+}
 
-    await writeFile(path.resolve(srcPath, "app.ts"), 
-        `import cookieParser from "cookie-parser";
-        import express from "express";
-
-        const app = express();
-
-        app.use(express.json());
-        app.use(cookieParser());
-
-        export default app;`
-    );
-    await writeFile(path.resolve(srcPath, "server.ts"),
-        `import app from "./app.js";
-        import dotenv from "dotenv";
-
-        dotenv.config();
-
-        const PORT = 5000;
-
-        app.listen(PORT, () => {
-            console.log(\`Server running on port ${5000}\`);
-        });`
-    )
-    logMessage("Backend: Added default files");
-
-    await writeFile(path.resolve(backendPath, ".gitignore"), 
+async function addGitignoreFile(rootPath: string) {
+    await writeFile(path.resolve(rootPath, ".gitignore"), 
         `# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n\n# Developer notes\ndev_notes\n\n# Environment variables\n.env\n`
     );
-    logMessage("Backend: Configured .gitignore file");
+}
 
-    await writeFile(path.resolve(backendPath, "tsconfig.json"), 
+async function configureExpressTsConfig(rootPath: string) {
+    await writeFile(path.resolve(rootPath, "tsconfig.json"), 
         `{
             "compilerOptions": {
                 // type checking
@@ -258,12 +210,10 @@ async function initializeExpressProject(name: string, pathParam: string): Promis
             "exclude": ["node_modules"]
         }`
     );
-    logMessage("Backend: Configured TypeScript config rules");
+}
 
-    await setupPrettier(backendPath);
-    logMessage("Backend: Configured Prettier settings");
-
-    const packageJsonPath = path.join(backendPath, "package.json");
+async function setupExpressPackageJson(rootPath: string) {
+    const packageJsonPath = path.join(rootPath, "package.json");
 
 	const packageStr = await readFile(packageJsonPath, "utf-8");
 	const packageJson = JSON.parse(packageStr);
@@ -277,6 +227,88 @@ async function initializeExpressProject(name: string, pathParam: string): Promis
     packageJson.type = "module";
 
 	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+}
+
+async function initializeFileSystemStructure(rootPath: string) {
+    const srcPath = path.resolve(rootPath, "src");
+    await mkdir(srcPath, {
+        recursive: true,
+    });
+
+    await mkdir(path.resolve(srcPath, "config"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "db"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "features"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "types"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "shared"), {
+        recursive: true,
+    });
+}
+
+async function setUpExpressDefaultFiles(rootPath: string) {
+    await writeFile(path.resolve(rootPath, "src", "app.ts"), 
+        `import cookieParser from "cookie-parser";
+        import express from "express";
+
+        const app = express();
+
+        app.use(express.json());
+        app.use(cookieParser());
+
+        export default app;`
+    );
+    await writeFile(path.resolve(rootPath, "src", "server.ts"),
+        `import app from "./app.js";
+        import dotenv from "dotenv";
+
+        dotenv.config();
+
+        const PORT = 5000;
+
+        app.listen(PORT, () => {
+            console.log(\`Server running on port ${5000}\`);
+        });`
+    )
+}
+
+async function initializeExpressProject(name: string, pathParam: string): Promise<void> {
+    const backendPath = path.resolve(pathParam, name);
+    await mkdir(backendPath, {
+        recursive: true
+    });
+
+    await initializeFileSystemStructure(backendPath);
+    logMessage("Backend: Initialized file system structure");
+
+    await initializeDefaultPackageJson(backendPath);
+    logMessage("Backend: Initialized package.json");
+
+    await installExpressDeps(backendPath);
+    logMessage("Backend: Installed main dependencies");
+
+    await installExpressDevDeps(backendPath);
+    logMessage("Backend: Installed additional dev dependencies");
+
+    await setUpExpressDefaultFiles(backendPath);
+    logMessage("Backend: Added default files");
+
+    await addGitignoreFile(backendPath);
+    logMessage("Backend: Configured .gitignore file");
+
+    await configureExpressTsConfig(backendPath);
+    logMessage("Backend: Configured TypeScript config rules");
+
+    await setupPrettier(backendPath);
+    logMessage("Backend: Configured Prettier settings");
+
+    await setupExpressPackageJson(backendPath);
     logMessage("Backend: Added package.json scripts and type: module");
 
     await formatAllFiles(backendPath);
