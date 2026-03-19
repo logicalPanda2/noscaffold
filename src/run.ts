@@ -23,6 +23,10 @@ export default async function run(): Promise<void> {
 				title: "React + Express",
 				value: "EXPRESS",
 			},
+            {
+                title: "Express only",
+                value: "EXPRESS_ONLY"
+            }
 		],
 		initial: 0,
 	});
@@ -36,6 +40,9 @@ export default async function run(): Promise<void> {
 			break;
 		case "EXPRESS":
 			await createReactExpressProject();
+            break;
+        case "EXPRESS_ONLY":
+            await createExpressProject();
 	}
 }
 
@@ -106,6 +113,23 @@ async function createReactExpressProject(): Promise<void> {
 	await scaffoldReactViteProject(frontendPath, "frontend");
 
 	await initializeExpressProject("backend", rootPath);
+
+	await initializeGitRepoAndCommit(rootPath);
+	logMessage("Scaffolding process finished successfully.");
+}
+
+async function createExpressProject() {
+    const { name }: { name: string } = await prompts({
+		type: "text",
+		name: "name",
+		message: "Project name:",
+		validate: (str: string) =>
+			!str.trim() ? "Value cannot be empty" : true,
+	});
+
+	const rootPath = path.resolve(process.cwd(), name);
+
+	await initializeExpressProject("", rootPath);
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
