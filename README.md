@@ -3,8 +3,9 @@
 noscaffold is an opinionated, CLI automation tool for scaffolding various kinds of React projects, such as:
 
 1. React + Vite
-2. React + Next
-3. React + Express (Coming soon)
+2. Next.js
+3. React + Express
+4. Bonus: Express only
 
 It speeds up the setup process by:
 
@@ -46,31 +47,29 @@ npm install -g noscaffold
 ```
 
 ## Usage
+
 ```
 npx noscaffold || bunx noscaffold
 ```
+
 Choose one out of the provided options.
 
 Wait until the scaffolding process has finished, indicated by the following message:
+
 ```
 > Scaffolding process finished successfully.
 ```
 
-## 1.0.0 Release Notes
+## 1.1.0 Release Notes
 
-noscaffold 1.0.0 has been officially released on npm!
+noscaffold 1.1.0 has been officially released on npm!
 
 Changes:
 
-1. **New option to scaffold Next.js project**
-2. Code migrated to TypeScript
-3. Use Bun as main package manager
-4. Better TS config rules for React + Vite projects
-5. Clearer and more descriptive messages
-
-### 1.0.4 Bugfixes
-
-Fixed an error where TypeScript would flag the globals.css import on Next.js projects.
+1. **New option to scaffold React + Express projects**
+2. Overall DX improvement
+3. Interface rework
+4. Bonus: New option to scaffold Express projects
 
 ### Note on older versions
 
