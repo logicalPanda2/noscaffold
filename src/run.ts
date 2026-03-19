@@ -39,6 +39,50 @@ export default async function run(): Promise<void> {
 	}
 }
 
+async function scaffoldReactViteProject(targetPath: string, name: string) {
+    await installMainDependencies(targetPath);
+	logMessage("Frontend: Installed main dependencies");
+
+	await deletePremadeReactViteFiles(targetPath);
+	logMessage("Frontend: Deleted pre-configured files and folders");
+
+	await setupPrettier(targetPath);
+	logMessage("Frontend: Configured Prettier settings");
+
+	await setupESLintForPrettier(targetPath);
+	logMessage("Frontend: Configured ESLint for Prettier");
+
+	await installAdditionalReactViteDependencies(targetPath);
+	logMessage("Frontend: Installed additional dev dependencies");
+
+	await setupTailwindImports(targetPath);
+	logMessage("Frontend: Changed tailwind imports on index.css");
+
+	await setupHTML(targetPath, name);
+	logMessage("Frontend: Changed index.html file");
+
+	await setupApp(targetPath);
+	logMessage("Frontend: Cleaned up App.tsx");
+
+	await setupTests(targetPath);
+	logMessage("Frontend: Set up testing environment");
+
+	await setupVitePlugins(targetPath);
+	logMessage("Frontend: Configured vite plugins");
+
+	await setupReactViteTsConfig(targetPath);
+	logMessage("Frontend: Configured TypeScript config rules");
+
+	await setupESLintConfig(targetPath);
+	logMessage("Frontend: Configured ESLint lint rules");
+
+	await addScriptsToPackageJson(targetPath);
+	logMessage("Frontend: Added format and test to package.json scripts");
+
+	await formatAllFiles(targetPath);
+	logMessage("Frontend: Formatted all files");
+}
+
 async function createReactExpressProject(): Promise<void> {
 	const { name }: { name: string } = await prompts({
 		type: "text",
@@ -59,47 +103,7 @@ async function createReactExpressProject(): Promise<void> {
 
     const frontendPath = path.resolve(rootPath, "frontend");
 
-    await installMainDependencies(frontendPath);
-	logMessage("Frontend: Installed main dependencies");
-
-	await deletePremadeReactViteFiles(frontendPath);
-	logMessage("Frontend: Deleted pre-configured files and folders");
-
-	await setupPrettier(frontendPath);
-	logMessage("Frontend: Configured Prettier settings");
-
-	await setupESLintForPrettier(frontendPath);
-	logMessage("Frontend: Configured ESLint for Prettier");
-
-	await installAdditionalReactViteDependencies(frontendPath);
-	logMessage("Frontend: Installed additional dev dependencies");
-
-	await setupTailwindImports(frontendPath);
-	logMessage("Frontend: Changed tailwind imports on index.css");
-
-	await setupHTML(frontendPath, name);
-	logMessage("Frontend: Changed index.html file");
-
-	await setupApp(frontendPath);
-	logMessage("Frontend: Cleaned up App.tsx");
-
-	await setupTests(frontendPath);
-	logMessage("Frontend: Set up testing environment");
-
-	await setupVitePlugins(frontendPath);
-	logMessage("Frontend: Configured vite plugins");
-
-	await setupReactViteTsConfig(frontendPath);
-	logMessage("Frontend: Configured TypeScript config rules");
-
-	await setupESLintConfig(frontendPath);
-	logMessage("Frontend: Configured ESLint lint rules");
-
-	await addScriptsToPackageJson(frontendPath);
-	logMessage("Frontend: Added format and test to package.json scripts");
-
-	await formatAllFiles(frontendPath);
-	logMessage("Frontend: Formatted all files");
+    await scaffoldReactViteProject(frontendPath, "frontend");
 
     await initializeExpressProject("backend", rootPath);
 
@@ -293,47 +297,7 @@ async function createReactViteProject(): Promise<void> {
 	const rootPath = path.resolve(process.cwd(), name);
 	logMessage(`Project location: ${rootPath}`);
 
-	await installMainDependencies(rootPath);
-	logMessage("Installed main dependencies");
-
-	await deletePremadeReactViteFiles(rootPath);
-	logMessage("Deleted pre-configured files and folders");
-
-	await setupPrettier(rootPath);
-	logMessage("Configured Prettier settings");
-
-	await setupESLintForPrettier(rootPath);
-	logMessage("Configured ESLint for Prettier");
-
-	await installAdditionalReactViteDependencies(rootPath);
-	logMessage("Installed additional dev dependencies");
-
-	await setupTailwindImports(rootPath);
-	logMessage("Changed tailwind imports on index.css");
-
-	await setupHTML(rootPath, name);
-	logMessage("Changed index.html file");
-
-	await setupApp(rootPath);
-	logMessage("Cleaned up App.tsx");
-
-	await setupTests(rootPath);
-	logMessage("Set up testing environment");
-
-	await setupVitePlugins(rootPath);
-	logMessage("Configured vite plugins");
-
-	await setupReactViteTsConfig(rootPath);
-	logMessage("Configured TypeScript config rules");
-
-	await setupESLintConfig(rootPath);
-	logMessage("Configured ESLint lint rules");
-
-	await addScriptsToPackageJson(rootPath);
-	logMessage("Added format and test to package.json scripts");
-
-	await formatAllFiles(rootPath);
-	logMessage("Formatted all files");
+	await scaffoldReactViteProject(rootPath, name);
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
