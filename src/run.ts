@@ -40,7 +40,7 @@ export default async function run(): Promise<void> {
 }
 
 async function scaffoldReactViteProject(targetPath: string, name: string) {
-    await installMainDependencies(targetPath);
+	await installMainDependencies(targetPath);
 	logMessage("Frontend: Installed main dependencies");
 
 	await deletePremadeReactViteFiles(targetPath);
@@ -92,82 +92,84 @@ async function createReactExpressProject(): Promise<void> {
 			!str.trim() ? "Value cannot be empty" : true,
 	});
 
-    const rootPath = path.resolve(process.cwd(), name);
+	const rootPath = path.resolve(process.cwd(), name);
 
-    await mkdir(path.resolve(process.cwd(), name), {
-        recursive: true,
-    });
+	await mkdir(path.resolve(process.cwd(), name), {
+		recursive: true,
+	});
 	logMessage(`Project location: ${rootPath}`);
 
-    await initializeReactWithVite("frontend", rootPath);
+	await initializeReactWithVite("frontend", rootPath);
 
-    const frontendPath = path.resolve(rootPath, "frontend");
+	const frontendPath = path.resolve(rootPath, "frontend");
 
-    await scaffoldReactViteProject(frontendPath, "frontend");
+	await scaffoldReactViteProject(frontendPath, "frontend");
 
-    await initializeExpressProject("backend", rootPath);
+	await initializeExpressProject("backend", rootPath);
 
-    await initializeGitRepoAndCommit(rootPath);
-    logMessage("Scaffolding process finished successfully.");
+	await initializeGitRepoAndCommit(rootPath);
+	logMessage("Scaffolding process finished successfully.");
 }
 
 async function initializeDefaultPackageJson(rootPath: string) {
-    await execa("npm", ["init", "-y"], {
-        cwd: rootPath,
-        stdio: "inherit",
-    });
+	await execa("npm", ["init", "-y"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
 }
 
 async function installExpressDeps(rootPath: string) {
-    await execa(
-        "bun", 
-        [
-            "add",
-            "bcryptjs",
-            "cookie-parser",
-            "dotenv",
-            "jsonwebtoken",
-            "pg",
-            "express",
-        ], 
-        {
+	await execa(
+		"bun",
+		[
+			"add",
+			"bcryptjs",
+			"cookie-parser",
+			"dotenv",
+			"jsonwebtoken",
+			"pg",
+			"express",
+		],
+		{
 			cwd: rootPath,
 			stdio: "inherit",
 		},
-    );
+	);
 }
 
 async function installExpressDevDeps(rootPath: string) {
-    await execa(
-        "bun",
-        [
-            "add",
-            "--dev",
-            "@types/cookie-parser",
-            "@types/express",
-            "@types/jsonwebtoken",
-            "@types/node",
-            "@types/pg",
-            "prettier",
-            "tsx",
-            "typescript",
-        ],
-        {
+	await execa(
+		"bun",
+		[
+			"add",
+			"--dev",
+			"@types/cookie-parser",
+			"@types/express",
+			"@types/jsonwebtoken",
+			"@types/node",
+			"@types/pg",
+			"prettier",
+			"tsx",
+			"typescript",
+		],
+		{
 			cwd: rootPath,
 			stdio: "inherit",
 		},
-    );
+	);
 }
 
 async function addGitignoreFile(rootPath: string) {
-    await writeFile(path.resolve(rootPath, ".gitignore"), 
-        `# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n\n# Developer notes\ndev_notes\n\n# Environment variables\n.env\n`
-    );
+	await writeFile(
+		path.resolve(rootPath, ".gitignore"),
+		`# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n\n# Developer notes\ndev_notes\n\n# Environment variables\n.env\n`,
+	);
 }
 
 async function configureExpressTsConfig(rootPath: string) {
-    await writeFile(path.resolve(rootPath, "tsconfig.json"), 
-        `{
+	await writeFile(
+		path.resolve(rootPath, "tsconfig.json"),
+		`{
             "compilerOptions": {
                 // type checking
                 "allowUnreachableCode": false,
@@ -208,12 +210,12 @@ async function configureExpressTsConfig(rootPath: string) {
             },
             "include": ["src"],
             "exclude": ["node_modules"]
-        }`
-    );
+        }`,
+	);
 }
 
 async function setupExpressPackageJson(rootPath: string) {
-    const packageJsonPath = path.join(rootPath, "package.json");
+	const packageJsonPath = path.join(rootPath, "package.json");
 
 	const packageStr = await readFile(packageJsonPath, "utf-8");
 	const packageJson = JSON.parse(packageStr);
@@ -221,40 +223,41 @@ async function setupExpressPackageJson(rootPath: string) {
 	packageJson.scripts ??= {};
 
 	packageJson.scripts.format = "prettier . --write";
-    packageJson.scripts.dev = "tsx watch src/server.ts";
-    packageJson.scripts.build = "tsc";
-    packageJson.scripts.start = "node dist/server.js";
-    packageJson.type = "module";
+	packageJson.scripts.dev = "tsx watch src/server.ts";
+	packageJson.scripts.build = "tsc";
+	packageJson.scripts.start = "node dist/server.js";
+	packageJson.type = "module";
 
 	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
 }
 
 async function initializeFileSystemStructure(rootPath: string) {
-    const srcPath = path.resolve(rootPath, "src");
-    await mkdir(srcPath, {
-        recursive: true,
-    });
+	const srcPath = path.resolve(rootPath, "src");
+	await mkdir(srcPath, {
+		recursive: true,
+	});
 
-    await mkdir(path.resolve(srcPath, "config"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "db"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "features"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "types"), {
-        recursive: true,
-    });
-    await mkdir(path.resolve(srcPath, "shared"), {
-        recursive: true,
-    });
+	await mkdir(path.resolve(srcPath, "config"), {
+		recursive: true,
+	});
+	await mkdir(path.resolve(srcPath, "db"), {
+		recursive: true,
+	});
+	await mkdir(path.resolve(srcPath, "features"), {
+		recursive: true,
+	});
+	await mkdir(path.resolve(srcPath, "types"), {
+		recursive: true,
+	});
+	await mkdir(path.resolve(srcPath, "shared"), {
+		recursive: true,
+	});
 }
 
 async function setUpExpressDefaultFiles(rootPath: string) {
-    await writeFile(path.resolve(rootPath, "src", "app.ts"), 
-        `import cookieParser from "cookie-parser";
+	await writeFile(
+		path.resolve(rootPath, "src", "app.ts"),
+		`import cookieParser from "cookie-parser";
         import express from "express";
 
         const app = express();
@@ -262,10 +265,11 @@ async function setUpExpressDefaultFiles(rootPath: string) {
         app.use(express.json());
         app.use(cookieParser());
 
-        export default app;`
-    );
-    await writeFile(path.resolve(rootPath, "src", "server.ts"),
-        `import app from "./app.js";
+        export default app;`,
+	);
+	await writeFile(
+		path.resolve(rootPath, "src", "server.ts"),
+		`import app from "./app.js";
         import dotenv from "dotenv";
 
         dotenv.config();
@@ -274,45 +278,48 @@ async function setUpExpressDefaultFiles(rootPath: string) {
 
         app.listen(PORT, () => {
             console.log(\`Server running on port ${5000}\`);
-        });`
-    )
+        });`,
+	);
 }
 
-async function initializeExpressProject(name: string, pathParam: string): Promise<void> {
-    const backendPath = path.resolve(pathParam, name);
-    await mkdir(backendPath, {
-        recursive: true
-    });
+async function initializeExpressProject(
+	name: string,
+	pathParam: string,
+): Promise<void> {
+	const backendPath = path.resolve(pathParam, name);
+	await mkdir(backendPath, {
+		recursive: true,
+	});
 
-    await initializeFileSystemStructure(backendPath);
-    logMessage("Backend: Initialized file system structure");
+	await initializeFileSystemStructure(backendPath);
+	logMessage("Backend: Initialized file system structure");
 
-    await initializeDefaultPackageJson(backendPath);
-    logMessage("Backend: Initialized package.json");
+	await initializeDefaultPackageJson(backendPath);
+	logMessage("Backend: Initialized package.json");
 
-    await installExpressDeps(backendPath);
-    logMessage("Backend: Installed main dependencies");
+	await installExpressDeps(backendPath);
+	logMessage("Backend: Installed main dependencies");
 
-    await installExpressDevDeps(backendPath);
-    logMessage("Backend: Installed additional dev dependencies");
+	await installExpressDevDeps(backendPath);
+	logMessage("Backend: Installed additional dev dependencies");
 
-    await setUpExpressDefaultFiles(backendPath);
-    logMessage("Backend: Added default files");
+	await setUpExpressDefaultFiles(backendPath);
+	logMessage("Backend: Added default files");
 
-    await addGitignoreFile(backendPath);
-    logMessage("Backend: Configured .gitignore file");
+	await addGitignoreFile(backendPath);
+	logMessage("Backend: Configured .gitignore file");
 
-    await configureExpressTsConfig(backendPath);
-    logMessage("Backend: Configured TypeScript config rules");
+	await configureExpressTsConfig(backendPath);
+	logMessage("Backend: Configured TypeScript config rules");
 
-    await setupPrettier(backendPath);
-    logMessage("Backend: Configured Prettier settings");
+	await setupPrettier(backendPath);
+	logMessage("Backend: Configured Prettier settings");
 
-    await setupExpressPackageJson(backendPath);
-    logMessage("Backend: Added package.json scripts and type: module");
+	await setupExpressPackageJson(backendPath);
+	logMessage("Backend: Added package.json scripts and type: module");
 
-    await formatAllFiles(backendPath);
-    logMessage("Backend: Formatted all files");
+	await formatAllFiles(backendPath);
+	logMessage("Backend: Formatted all files");
 }
 
 async function createReactViteProject(): Promise<void> {
@@ -339,12 +346,15 @@ function logMessage(message: string): void {
 	console.log(`> ${message}`);
 }
 
-async function initializeReactWithVite(projectName: string, path: string): Promise<void> {
+async function initializeReactWithVite(
+	projectName: string,
+	path: string,
+): Promise<void> {
 	await execa(
 		"bun",
 		["create", "vite@latest", projectName, "--template", "react-ts"],
 		{
-            cwd: path,
+			cwd: path,
 			input: "n\n",
 			stdio: ["pipe", "inherit", "inherit"],
 		},
@@ -800,8 +810,8 @@ async function createNextProject(): Promise<void> {
 	await addTypeModuleToPackageJson(rootPath);
 	logMessage("Added type module to package.json");
 
-    await fixCSSImportError(rootPath);
-    logMessage("Fixed TS error for globals.css import");
+	await fixCSSImportError(rootPath);
+	logMessage("Fixed TS error for globals.css import");
 
 	await formatAllFiles(rootPath);
 	logMessage("Formatted all files");
@@ -900,11 +910,11 @@ async function editLayoutMetadata(
 }
 
 async function fixCSSImportError(rootPath: string) {
-    await mkdir(path.resolve(rootPath, "types"), {
-        recursive: true,
-    });
+	await mkdir(path.resolve(rootPath, "types"), {
+		recursive: true,
+	});
 
-    const typedefPath = path.join(rootPath, "types", "css.d.ts");
+	const typedefPath = path.join(rootPath, "types", "css.d.ts");
 	await writeFile(
 		typedefPath,
 		`declare module '*.css';
