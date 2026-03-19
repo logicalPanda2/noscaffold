@@ -20,9 +20,8 @@ export default async function run(): Promise<void> {
 				value: "NEXT",
 			},
 			{
-				title: "React + Express (Coming soon)",
+				title: "React + Express",
 				value: "EXPRESS",
-				disabled: true,
 			},
 		],
 		initial: 0,
@@ -41,7 +40,243 @@ export default async function run(): Promise<void> {
 }
 
 async function createReactExpressProject(): Promise<void> {
-	console.log("How did we get here?");
+	const { name }: { name: string } = await prompts({
+		type: "text",
+		name: "name",
+		message: "Project name:",
+		validate: (str: string) =>
+			!str.trim() ? "Value cannot be empty" : true,
+	});
+
+    const rootPath = path.resolve(process.cwd(), name);
+
+    await mkdir(path.resolve(process.cwd(), name), {
+        recursive: true,
+    });
+	logMessage(`Project location: ${rootPath}`);
+
+    await initializeReactWithVite("frontend", rootPath);
+
+    const frontendPath = path.resolve(rootPath, "frontend");
+
+    await installMainDependencies(frontendPath);
+	logMessage("Frontend: Installed main dependencies");
+
+	await deletePremadeReactViteFiles(frontendPath);
+	logMessage("Frontend: Deleted pre-configured files and folders");
+
+	await setupPrettier(frontendPath);
+	logMessage("Frontend: Configured Prettier settings");
+
+	await setupESLintForPrettier(frontendPath);
+	logMessage("Frontend: Configured ESLint for Prettier");
+
+	await installAdditionalReactViteDependencies(frontendPath);
+	logMessage("Frontend: Installed additional dev dependencies");
+
+	await setupTailwindImports(frontendPath);
+	logMessage("Frontend: Changed tailwind imports on index.css");
+
+	await setupHTML(frontendPath, name);
+	logMessage("Frontend: Changed index.html file");
+
+	await setupApp(frontendPath);
+	logMessage("Frontend: Cleaned up App.tsx");
+
+	await setupTests(frontendPath);
+	logMessage("Frontend: Set up testing environment");
+
+	await setupVitePlugins(frontendPath);
+	logMessage("Frontend: Configured vite plugins");
+
+	await setupReactViteTsConfig(frontendPath);
+	logMessage("Frontend: Configured TypeScript config rules");
+
+	await setupESLintConfig(frontendPath);
+	logMessage("Frontend: Configured ESLint lint rules");
+
+	await addScriptsToPackageJson(frontendPath);
+	logMessage("Frontend: Added format and test to package.json scripts");
+
+	await formatAllFiles(frontendPath);
+	logMessage("Frontend: Formatted all files");
+
+    await initializeExpressProject("backend", rootPath);
+
+    await initializeGitRepoAndCommit(rootPath);
+    logMessage("Scaffolding process finished successfully.");
+}
+
+async function initializeExpressProject(name: string, pathParam: string): Promise<void> {
+    const backendPath = path.resolve(pathParam, name);
+    await mkdir(backendPath, {
+        recursive: true
+    });
+
+    const srcPath = path.resolve(backendPath, "src");
+    await mkdir(srcPath, {
+        recursive: true,
+    });
+
+    await mkdir(path.resolve(srcPath, "config"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "db"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "features"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "types"), {
+        recursive: true,
+    });
+    await mkdir(path.resolve(srcPath, "shared"), {
+        recursive: true,
+    });
+    logMessage("Backend: Initialized file system structure");
+
+    await execa("npm", ["init", "-y"], {
+        cwd: backendPath,
+        stdio: "inherit",
+    });
+    logMessage("Backend: Initialized package.json");
+
+    await execa(
+        "bun", 
+        [
+            "add",
+            "bcryptjs",
+            "cookie-parser",
+            "dotenv",
+            "jsonwebtoken",
+            "pg",
+            "express",
+        ], 
+        {
+			cwd: backendPath,
+			stdio: "inherit",
+		},
+    );
+    logMessage("Backend: Installed main dependencies");
+
+    await execa(
+        "bun",
+        [
+            "add",
+            "--dev",
+            "@types/cookie-parser",
+            "@types/express",
+            "@types/jsonwebtoken",
+            "@types/node",
+            "@types/pg",
+            "prettier",
+            "tsx",
+            "typescript",
+        ],
+        {
+			cwd: backendPath,
+			stdio: "inherit",
+		},
+    );
+    logMessage("Backend: Installed additional dev dependencies");
+
+    await writeFile(path.resolve(srcPath, "app.ts"), 
+        `import cookieParser from "cookie-parser";
+        import express from "express";
+
+        const app = express();
+
+        app.use(express.json());
+        app.use(cookieParser());
+
+        export default app;`
+    );
+    await writeFile(path.resolve(srcPath, "server.ts"),
+        `import app from "./app.js";
+        import dotenv from "dotenv";
+
+        dotenv.config();
+
+        const PORT = 5000;
+
+        app.listen(PORT, () => {
+            console.log(\`Server running on port ${5000}\`);
+        });`
+    )
+    logMessage("Backend: Added default files");
+
+    await writeFile(path.resolve(backendPath, ".gitignore"), 
+        `# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n\n# Developer notes\ndev_notes\n\n# Environment variables\n.env\n`
+    );
+    logMessage("Backend: Configured .gitignore file");
+
+    await writeFile(path.resolve(backendPath, "tsconfig.json"), 
+        `{
+            "compilerOptions": {
+                // type checking
+                "allowUnreachableCode": false,
+                "allowUnusedLabels": false,
+                "exactOptionalPropertyTypes": true,
+                "noFallthroughCasesInSwitch": true,
+                "noImplicitReturns": true,
+                "noImplicitOverride": true,
+                "noPropertyAccessFromIndexSignature": false,
+                "noUncheckedIndexedAccess": false,
+                "noUnusedLocals": true,
+                "noUnusedParameters": true,
+                "strict": true,
+
+                // dirs
+                "rootDir": "./src",
+                "outDir": "./dist",
+
+                // modules
+                "module": "nodenext",
+                "target": "esnext",
+                "noUncheckedSideEffectImports": true,
+                "esModuleInterop": true,
+                "allowSyntheticDefaultImports": true,
+                "types": [],
+
+                // emit
+                "declaration": true,
+                "declarationMap": true,
+                "sourceMap": true,
+
+                // other options
+                "jsx": "react-jsx",
+                "verbatimModuleSyntax": true,
+                "isolatedModules": true,
+                "moduleDetection": "force",
+                "skipLibCheck": true
+            },
+            "include": ["src"],
+            "exclude": ["node_modules"]
+        }`
+    );
+    logMessage("Backend: Configured TypeScript config rules");
+
+    await setupPrettier(backendPath);
+    logMessage("Backend: Configured Prettier settings");
+
+    const packageJsonPath = path.join(backendPath, "package.json");
+
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
+
+	packageJson.scripts ??= {};
+
+	packageJson.scripts.format = "prettier . --write";
+    packageJson.scripts.dev = "tsx watch src/server.ts";
+    packageJson.scripts.build = "tsc";
+    packageJson.scripts.start = "node dist/server.js";
+    packageJson.type = "module";
+
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+    logMessage("Backend: Added package.json scripts and type: module");
+
+    await formatAllFiles(backendPath);
+    logMessage("Backend: Formatted all files");
 }
 
 async function createReactViteProject(): Promise<void> {
@@ -53,7 +288,7 @@ async function createReactViteProject(): Promise<void> {
 			!str.trim() ? "Value cannot be empty" : true,
 	});
 
-	await initializeReactWithVite(name);
+	await initializeReactWithVite(name, path.resolve(process.cwd()));
 
 	const rootPath = path.resolve(process.cwd(), name);
 	logMessage(`Project location: ${rootPath}`);
@@ -108,11 +343,12 @@ function logMessage(message: string): void {
 	console.log(`> ${message}`);
 }
 
-async function initializeReactWithVite(projectName: string): Promise<void> {
+async function initializeReactWithVite(projectName: string, path: string): Promise<void> {
 	await execa(
 		"bun",
 		["create", "vite@latest", projectName, "--template", "react-ts"],
 		{
+            cwd: path,
 			input: "n\n",
 			stdio: ["pipe", "inherit", "inherit"],
 		},
