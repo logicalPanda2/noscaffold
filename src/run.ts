@@ -4,12 +4,21 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
+import kleur from "kleur";
 
 export default async function run(): Promise<void> {
+    console.log(
+        `
+              __   __   __        ___  ___  __        __  
+        |\\ | /  \\ /__\` /  \`  /\\  |__  |__  /  \\ |    |  \\ 
+        | \\| \\__/ .__/ \\__, /~~\\ |    |    \\__/ |___ |__/                                      
+        `
+    );
+    let lastCursor = -1; 
 	const { option }: { option: ProjectOption } = await prompts({
 		type: "select",
 		name: "option",
-		message: "Project type:",
+		message: "Choose a project type to scaffold:",
 		choices: [
 			{
 				title: "React + Vite",
@@ -24,10 +33,23 @@ export default async function run(): Promise<void> {
 				value: "EXPRESS",
 			},
             {
-                title: "Express only",
+                title: "Express",
                 value: "EXPRESS_ONLY"
             }
 		],
+        onRender(kleur) {
+            const obj = this as any;
+            obj.msg = kleur.reset("Choose a project to scaffold:");
+
+            if(obj.cursor === lastCursor)
+
+            lastCursor = obj.cursor;
+            obj.hint = "Use arrow keys. Enter to select.";
+            obj.choices[0].title = obj.cursor === 0 ? `${kleur.reset().cyan("React")}${kleur.reset().white(` + `)}${kleur.reset().magenta("Vite")}` : kleur.reset().gray("React + Vite");
+            obj.choices[1].title = obj.cursor === 1 ? kleur.reset().white("Next.js") : kleur.reset().gray("Next.js");
+            obj.choices[2].title = obj.cursor === 2 ? `${kleur.reset().cyan("React")}${kleur.reset().white(` + `)}${kleur.reset().yellow("Express")}` : kleur.reset().gray("React + Express");
+            obj.choices[3].title = obj.cursor === 3 ? kleur.reset().yellow("Express") : kleur.reset().gray("Express");
+        },
 		initial: 0,
 	});
 
@@ -94,10 +116,15 @@ async function createReactExpressProject(): Promise<void> {
 	const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
-		message: "Project name:",
+		message: kleur.reset().white("Type in your project name:"),
 		validate: (str: string) =>
-			!str.trim() ? "Value cannot be empty" : true,
+			!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 	});
+
+    if (!name) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
 
 	const rootPath = path.resolve(process.cwd(), name);
 
@@ -122,10 +149,15 @@ async function createExpressProject() {
     const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
-		message: "Project name:",
+		message: kleur.reset().white("Type in your project name:"),
 		validate: (str: string) =>
-			!str.trim() ? "Value cannot be empty" : true,
+			!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 	});
+
+    if (!name) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
 
 	const rootPath = path.resolve(process.cwd(), name);
 
@@ -350,10 +382,15 @@ async function createReactViteProject(): Promise<void> {
 	const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
-		message: "Project name:",
+		message: kleur.reset().white("Type in your project name:"),
 		validate: (str: string) =>
-			!str.trim() ? "Value cannot be empty" : true,
+			!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 	});
+
+    if (!name) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
 
 	await initializeReactWithVite(name, path.resolve(process.cwd()));
 
@@ -769,26 +806,26 @@ async function createNextProject(): Promise<void> {
 		{
 			type: "text",
 			name: "dirName",
-			message: "What will be your project's directory name?",
+			message: kleur.reset().white("Type in your project's directory name:"),
 			initial: "my-app",
 			validate: (str: string) =>
-				!str.trim() ? "Value cannot be empty" : true,
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 		},
 		{
 			type: "text",
 			name: "title",
-			message: "What will be your project's HTML title?",
+			message: kleur.reset().white("Type in your project's HTML title:"),
 			initial: "My App",
 			validate: (str: string) =>
-				!str.trim() ? "Value cannot be empty" : true,
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 		},
 		{
 			type: "text",
 			name: "desc",
-			message: "What will be your project's HTML description?",
+			message: kleur.reset().white("Type in your project's HTML description:"),
 			initial: "App built with Create Next App",
 			validate: (str: string) =>
-				!str.trim() ? "Value cannot be empty" : true,
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
 		},
 	]);
 
