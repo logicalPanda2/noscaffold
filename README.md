@@ -24,7 +24,7 @@ It speeds up the setup process by:
 
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [1.1.0 Release Notes](#110-release-notes)
+3. [1.1.2 Release Notes](#112-release-notes)
 4. [License](#license)
 
 ## Installation
