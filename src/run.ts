@@ -6,7 +6,7 @@ import path from "path";
 import process from "process";
 import kleur from "kleur";
 
-export default async function run(): Promise<void> {
+export default async function run() {
     console.log(
         `
               __   __   __        ___  ___  __        __  
@@ -92,51 +92,32 @@ export default async function run(): Promise<void> {
 	}
 }
 
-async function scaffoldReactViteProject(targetPath: string, name: string) {
-	await installMainDependencies(targetPath);
-	logMessage("Frontend: Installed main dependencies");
+// --- HIGHER-ORDER CONTROLLER FUNCTIONS ---
+async function createReactViteProject() {
+	const { name }: { name: string } = await prompts({
+		type: "text",
+		name: "name",
+		message: kleur.reset().white("Type in your project name:"),
+		validate: (str: string) =>
+			!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
+	});
 
-	await deletePremadeReactViteFiles(targetPath);
-	logMessage("Frontend: Deleted pre-configured files and folders");
+    if (!name) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
 
-	await setupPrettier(targetPath);
-	logMessage("Frontend: Configured Prettier settings");
+	await initializeReactWithVite(name, path.resolve(process.cwd()));
 
-	await setupESLintForPrettier(targetPath);
-	logMessage("Frontend: Configured ESLint for Prettier");
+	const rootPath = path.resolve(process.cwd(), name);
+	logMessage(`Project location: ${rootPath}`);
 
-	await installAdditionalReactViteDependencies(targetPath);
-	logMessage("Frontend: Installed additional dev dependencies");
+	await scaffoldReactViteProject(rootPath, name);
 
-	await setupTailwindImports(targetPath);
-	logMessage("Frontend: Changed tailwind imports on index.css");
-
-	await setupHTML(targetPath, name);
-	logMessage("Frontend: Changed index.html file");
-
-	await setupApp(targetPath);
-	logMessage("Frontend: Cleaned up App.tsx");
-
-	await setupTests(targetPath);
-	logMessage("Frontend: Set up testing environment");
-
-	await setupVitePlugins(targetPath);
-	logMessage("Frontend: Configured vite plugins");
-
-	await setupReactViteTsConfig(targetPath);
-	logMessage("Frontend: Configured TypeScript config rules");
-
-	await setupESLintConfig(targetPath);
-	logMessage("Frontend: Configured ESLint lint rules");
-
-	await addScriptsToPackageJson(targetPath);
-	logMessage("Frontend: Added format and test to package.json scripts");
-
-	await formatAllFiles(targetPath);
-	logMessage("Frontend: Formatted all files");
+	await initializeGitRepoAndCommit(rootPath);
+	logMessage("Scaffolding process finished successfully.");
 }
-
-async function createReactExpressProject(): Promise<void> {
+async function createReactExpressProject() {
 	const { name }: { name: string } = await prompts({
 		type: "text",
 		name: "name",
@@ -168,7 +149,6 @@ async function createReactExpressProject(): Promise<void> {
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
 }
-
 async function createExpressProject() {
     const { name }: { name: string } = await prompts({
 		type: "text",
@@ -190,14 +170,249 @@ async function createExpressProject() {
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
 }
+async function createNextProject() {
+	const data: Record<"dirName" | "title" | "desc", string> = await prompts([
+		{
+			type: "text",
+			name: "dirName",
+			message: kleur.reset().white("Type in your project's directory name:"),
+			initial: "my-app",
+			validate: (str: string) =>
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
+		},
+		{
+			type: "text",
+			name: "title",
+			message: kleur.reset().white("Type in your project's HTML title:"),
+			initial: "My App",
+			validate: (str: string) =>
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
+		},
+		{
+			type: "text",
+			name: "desc",
+			message: kleur.reset().white("Type in your project's HTML description:"),
+			initial: "App built with Create Next App",
+			validate: (str: string) =>
+				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
+		},
+	]);
 
+	if (!data.dirName || !data.title || !data.desc) {
+		logMessage("Incomplete data. Aborting process");
+		process.exit(1);
+	}
+
+	await initializeNextProject(data.dirName);
+
+	const rootPath = path.resolve(process.cwd(), data.dirName);
+	logMessage(`Project location: ${rootPath}`);
+
+	await installMainDependencies(rootPath);
+	logMessage("Installed main dependencies");
+
+	await installAdditionalNextDependencies(rootPath);
+	logMessage("Installed additional dev dependencies");
+
+	await deletePremadeNextFiles(rootPath);
+	logMessage("Deleted pre-configured files and folders");
+
+	await setNextTailwindAndRootPageDefaults(rootPath);
+	logMessage("Set up tailwind and cleaned up page.tsx");
+
+	await editNextLayoutMetadata(rootPath, data.title, data.desc);
+	logMessage(
+		"Edited HTML to match title and description with provided values",
+	);
+
+	await setupPrettier(rootPath);
+	logMessage("Configured Prettier settings");
+
+	await setupESLintForPrettier(rootPath);
+	logMessage("Configured ESLint for Prettier");
+
+	await setupNextTsConfig(rootPath);
+	logMessage("Configured TypeScript config rules");
+
+	await addFormatScriptToPackageJson(rootPath);
+	logMessage("Added format script to package.json");
+
+	await addTypeModuleToPackageJson(rootPath);
+	logMessage("Added type module to package.json");
+
+	await fixNextCSSImportError(rootPath);
+	logMessage("Fixed TS error for globals.css import");
+
+	await formatAllFiles(rootPath);
+	logMessage("Formatted all files");
+
+	await initializeGitRepoAndCommit(rootPath);
+	logMessage("Scaffolding process finished successfully.");
+}
+async function initializeExpressProject(
+	name: string,
+	pathParam: string,
+) {
+	const backendPath = path.resolve(pathParam, name);
+	await mkdir(backendPath, {
+		recursive: true,
+	});
+
+	await initializeExpressFileSystemStructure(backendPath);
+	logMessage("Backend: Initialized file system structure");
+
+	await initializeDefaultPackageJson(backendPath);
+	logMessage("Backend: Initialized package.json");
+
+	await installExpressDeps(backendPath);
+	logMessage("Backend: Installed main dependencies");
+
+	await installExpressDevDeps(backendPath);
+	logMessage("Backend: Installed additional dev dependencies");
+
+	await setUpExpressDefaultFiles(backendPath);
+	logMessage("Backend: Added default files");
+
+	await addExpressGitignoreFile(backendPath);
+	logMessage("Backend: Configured .gitignore file");
+
+	await configureExpressTsConfig(backendPath);
+	logMessage("Backend: Configured TypeScript config rules");
+
+	await setupPrettier(backendPath);
+	logMessage("Backend: Configured Prettier settings");
+
+	await setupExpressPackageJson(backendPath);
+	logMessage("Backend: Added package.json scripts and type: module");
+
+	await formatAllFiles(backendPath);
+	logMessage("Backend: Formatted all files");
+}
+async function scaffoldReactViteProject(targetPath: string, name: string) {
+	await installMainDependencies(targetPath);
+	logMessage("Frontend: Installed main dependencies");
+
+	await deletePremadeReactViteFiles(targetPath);
+	logMessage("Frontend: Deleted pre-configured files and folders");
+
+	await setupPrettier(targetPath);
+	logMessage("Frontend: Configured Prettier settings");
+
+	await setupESLintForPrettier(targetPath);
+	logMessage("Frontend: Configured ESLint for Prettier");
+
+	await installAdditionalReactViteDependencies(targetPath);
+	logMessage("Frontend: Installed additional dev dependencies");
+
+	await setupReactViteTailwindImports(targetPath);
+	logMessage("Frontend: Changed tailwind imports on index.css");
+
+	await setupReactViteHTML(targetPath, name);
+	logMessage("Frontend: Changed index.html file");
+
+	await setupReactViteApp(targetPath);
+	logMessage("Frontend: Cleaned up App.tsx");
+
+	await setupReactViteTests(targetPath);
+	logMessage("Frontend: Set up testing environment");
+
+	await setupVitePlugins(targetPath);
+	logMessage("Frontend: Configured vite plugins");
+
+	await setupReactViteTsConfig(targetPath);
+	logMessage("Frontend: Configured TypeScript config rules");
+
+	await setupReactViteESLintConfig(targetPath);
+	logMessage("Frontend: Configured ESLint lint rules");
+
+	await addReactViteScriptsToPackageJson(targetPath);
+	logMessage("Frontend: Added format and test to package.json scripts");
+
+	await formatAllFiles(targetPath);
+	logMessage("Frontend: Formatted all files");
+}
+
+// --- UTILITY FUNCTIONS ---
+function logMessage(message: string) {
+	console.log(`> ${message}`);
+}
+
+// --- CROSS-PROJECT FUNCTIONS ---
+async function setupPrettier(rootPath: string) {
+	const prettierConfigPath = path.join(rootPath, ".prettierrc.json");
+	const prettierConfig = {
+		useTabs: true,
+		tabWidth: 4,
+	};
+
+	await writeFile(prettierConfigPath, JSON.stringify(prettierConfig));
+}
+async function setupESLintForPrettier(rootPath: string) {
+	const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
+	const eslintConfig = {
+		extends: ["prettier"],
+	};
+
+	await writeFile(eslintConfigPath, JSON.stringify(eslintConfig));
+}
 async function initializeDefaultPackageJson(rootPath: string) {
 	await execa("npm", ["init", "-y"], {
 		cwd: rootPath,
 		stdio: "inherit",
 	});
 }
+async function installMainDependencies(rootPath: string) {
+	await execa("bun", ["install"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
+}
+async function formatAllFiles(rootPath: string) {
+	await execa("bun", ["format"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
+}
+async function initializeGitRepoAndCommit(rootPath: string) {
+	await execa("git", ["init"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
 
+	await execa("git", ["add", "."], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
+
+	await execa("git", ["commit", "-m", "Initial commit"], {
+		cwd: rootPath,
+		stdio: "inherit",
+	});
+}
+async function addFormatScriptToPackageJson(rootPath: string) {
+	const packageJsonPath = path.join(rootPath, "package.json");
+
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
+
+	packageJson.scripts ??= {};
+
+	packageJson.scripts.format = "prettier . --write";
+
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+}
+async function addTypeModuleToPackageJson(rootPath: string) {
+	const packageJsonPath = path.join(rootPath, "package.json");
+
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
+
+	packageJson.type = "module";
+
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+}
+
+// --- EXPRESS FUNCTIONS ---
 async function installExpressDeps(rootPath: string) {
 	await execa(
 		"bun",
@@ -216,7 +431,6 @@ async function installExpressDeps(rootPath: string) {
 		},
 	);
 }
-
 async function installExpressDevDeps(rootPath: string) {
 	await execa(
 		"bun",
@@ -238,14 +452,12 @@ async function installExpressDevDeps(rootPath: string) {
 		},
 	);
 }
-
-async function addGitignoreFile(rootPath: string) {
+async function addExpressGitignoreFile(rootPath: string) {
 	await writeFile(
 		path.resolve(rootPath, ".gitignore"),
 		`# Logs\nlogs\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\npnpm-debug.log*\nlerna-debug.log*\n\nnode_modules\ndist\ndist-ssr\n*.local\n\n# Editor directories and files\n.vscode/*\n!.vscode/extensions.json\n.idea\n.DS_Store\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n\n# Developer notes\ndev_notes\n\n# Environment variables\n.env\n`,
 	);
 }
-
 async function configureExpressTsConfig(rootPath: string) {
 	await writeFile(
 		path.resolve(rootPath, "tsconfig.json"),
@@ -293,7 +505,6 @@ async function configureExpressTsConfig(rootPath: string) {
         }`,
 	);
 }
-
 async function setupExpressPackageJson(rootPath: string) {
 	const packageJsonPath = path.join(rootPath, "package.json");
 
@@ -310,8 +521,7 @@ async function setupExpressPackageJson(rootPath: string) {
 
 	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
 }
-
-async function initializeFileSystemStructure(rootPath: string) {
+async function initializeExpressFileSystemStructure(rootPath: string) {
 	const srcPath = path.resolve(rootPath, "src");
 	await mkdir(srcPath, {
 		recursive: true,
@@ -333,7 +543,6 @@ async function initializeFileSystemStructure(rootPath: string) {
 		recursive: true,
 	});
 }
-
 async function setUpExpressDefaultFiles(rootPath: string) {
 	await writeFile(
 		path.resolve(rootPath, "src", "app.ts"),
@@ -362,79 +571,11 @@ async function setUpExpressDefaultFiles(rootPath: string) {
 	);
 }
 
-async function initializeExpressProject(
-	name: string,
-	pathParam: string,
-): Promise<void> {
-	const backendPath = path.resolve(pathParam, name);
-	await mkdir(backendPath, {
-		recursive: true,
-	});
-
-	await initializeFileSystemStructure(backendPath);
-	logMessage("Backend: Initialized file system structure");
-
-	await initializeDefaultPackageJson(backendPath);
-	logMessage("Backend: Initialized package.json");
-
-	await installExpressDeps(backendPath);
-	logMessage("Backend: Installed main dependencies");
-
-	await installExpressDevDeps(backendPath);
-	logMessage("Backend: Installed additional dev dependencies");
-
-	await setUpExpressDefaultFiles(backendPath);
-	logMessage("Backend: Added default files");
-
-	await addGitignoreFile(backendPath);
-	logMessage("Backend: Configured .gitignore file");
-
-	await configureExpressTsConfig(backendPath);
-	logMessage("Backend: Configured TypeScript config rules");
-
-	await setupPrettier(backendPath);
-	logMessage("Backend: Configured Prettier settings");
-
-	await setupExpressPackageJson(backendPath);
-	logMessage("Backend: Added package.json scripts and type: module");
-
-	await formatAllFiles(backendPath);
-	logMessage("Backend: Formatted all files");
-}
-
-async function createReactViteProject(): Promise<void> {
-	const { name }: { name: string } = await prompts({
-		type: "text",
-		name: "name",
-		message: kleur.reset().white("Type in your project name:"),
-		validate: (str: string) =>
-			!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
-	});
-
-    if (!name) {
-		logMessage("Incomplete data. Aborting process");
-		process.exit(1);
-	}
-
-	await initializeReactWithVite(name, path.resolve(process.cwd()));
-
-	const rootPath = path.resolve(process.cwd(), name);
-	logMessage(`Project location: ${rootPath}`);
-
-	await scaffoldReactViteProject(rootPath, name);
-
-	await initializeGitRepoAndCommit(rootPath);
-	logMessage("Scaffolding process finished successfully.");
-}
-
-function logMessage(message: string): void {
-	console.log(`> ${message}`);
-}
-
+// --- REACT + VITE FUNCTIONS ---
 async function initializeReactWithVite(
 	projectName: string,
 	path: string,
-): Promise<void> {
+) {
 	await execa(
 		"bun",
 		["create", "vite@latest", projectName, "--template", "react-ts"],
@@ -445,39 +586,7 @@ async function initializeReactWithVite(
 		},
 	);
 }
-
-async function installMainDependencies(rootPath: string): Promise<void> {
-	await execa("bun", ["install"], {
-		cwd: rootPath,
-		stdio: "inherit",
-	});
-}
-
-async function formatAllFiles(rootPath: string): Promise<void> {
-	await execa("bun", ["format"], {
-		cwd: rootPath,
-		stdio: "inherit",
-	});
-}
-
-async function initializeGitRepoAndCommit(rootPath: string): Promise<void> {
-	await execa("git", ["init"], {
-		cwd: rootPath,
-		stdio: "inherit",
-	});
-
-	await execa("git", ["add", "."], {
-		cwd: rootPath,
-		stdio: "inherit",
-	});
-
-	await execa("git", ["commit", "-m", "Initial commit"], {
-		cwd: rootPath,
-		stdio: "inherit",
-	});
-}
-
-async function deletePremadeReactViteFiles(rootPath: string): Promise<void> {
+async function deletePremadeReactViteFiles(rootPath: string) {
 	const publicPath = path.join(rootPath, "public");
 	await rm(publicPath, {
 		recursive: true,
@@ -502,29 +611,9 @@ async function deletePremadeReactViteFiles(rootPath: string): Promise<void> {
 		force: true,
 	});
 }
-
-async function setupPrettier(rootPath: string): Promise<void> {
-	const prettierConfigPath = path.join(rootPath, ".prettierrc.json");
-	const prettierConfig = {
-		useTabs: true,
-		tabWidth: 4,
-	};
-
-	await writeFile(prettierConfigPath, JSON.stringify(prettierConfig));
-}
-
-async function setupESLintForPrettier(rootPath: string): Promise<void> {
-	const eslintConfigPath = path.join(rootPath, ".eslintrc.json");
-	const eslintConfig = {
-		extends: ["prettier"],
-	};
-
-	await writeFile(eslintConfigPath, JSON.stringify(eslintConfig));
-}
-
 async function installAdditionalReactViteDependencies(
 	rootPath: string,
-): Promise<void> {
+) {
 	await execa(
 		"bun",
 		[
@@ -547,14 +636,12 @@ async function installAdditionalReactViteDependencies(
 		},
 	);
 }
-
-async function setupTailwindImports(rootPath: string): Promise<void> {
+async function setupReactViteTailwindImports(rootPath: string) {
 	const indexCssPath = path.join(rootPath, "src", "index.css");
 
 	await writeFile(indexCssPath, '@import "tailwindcss";');
 }
-
-async function setupHTML(rootPath: string, projectName: string): Promise<void> {
+async function setupReactViteHTML(rootPath: string, projectName: string) {
 	const indexHTMLPath = path.join(rootPath, "index.html");
 
 	await writeFile(
@@ -579,8 +666,7 @@ async function setupHTML(rootPath: string, projectName: string): Promise<void> {
         </html>`,
 	);
 }
-
-async function setupApp(rootPath: string): Promise<void> {
+async function setupReactViteApp(rootPath: string) {
 	const AppPath = path.join(rootPath, "src", "App.tsx");
 
 	await writeFile(
@@ -612,8 +698,7 @@ async function setupApp(rootPath: string): Promise<void> {
         );`,
 	);
 }
-
-async function setupTests(rootPath: string): Promise<void> {
+async function setupReactViteTests(rootPath: string) {
 	const setupTestsPath = path.join(rootPath, "src", "setupTests.ts");
 
 	await writeFile(
@@ -621,8 +706,7 @@ async function setupTests(rootPath: string): Promise<void> {
 		'import "@testing-library/jest-dom/vitest";',
 	);
 }
-
-async function setupVitePlugins(rootPath: string): Promise<void> {
+async function setupVitePlugins(rootPath: string) {
 	const viteConfigPath = path.join(rootPath, "vite.config.ts");
 
 	await writeFile(
@@ -641,8 +725,120 @@ async function setupVitePlugins(rootPath: string): Promise<void> {
         });`,
 	);
 }
+async function setupReactViteTsConfig(rootPath: string) {
+	const appTsConfig = path.join(rootPath, "tsconfig.app.json");
 
-async function setupNextTsConfig(rootPath: string): Promise<void> {
+	await writeFile(
+		appTsConfig,
+		`{
+            "compilerOptions": {
+                // vite
+                "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+                "target": "ES2022",
+                "useDefineForClassFields": true,
+                "lib": ["ES2022", "DOM", "DOM.Iterable"],
+                "module": "ESNext",
+                "types": ["vite/client", "vitest/globals"],
+                "moduleResolution": "bundler",
+                "allowImportingTsExtensions": true,
+                "noEmit": true,        
+                "erasableSyntaxOnly": true,
+
+                // type checking
+                "allowUnreachableCode": false,
+                "allowUnusedLabels": false,
+                "exactOptionalPropertyTypes": true,
+                "noFallthroughCasesInSwitch": true,
+                "noImplicitReturns": true,
+                "noImplicitOverride": true,
+                "noPropertyAccessFromIndexSignature": false,
+                "noUncheckedIndexedAccess": false,
+                "noUnusedLocals": true,
+                "noUnusedParameters": true,
+                "strict": true,
+
+                // dirs
+                "rootDir": "./src",
+                "outDir": "./dist",
+
+                // modules
+                "noUncheckedSideEffectImports": true,
+                "esModuleInterop": true,
+                "allowSyntheticDefaultImports": true,
+
+                // emit
+                "declaration": true,
+                "declarationMap": true,
+                "sourceMap": true,
+
+                // other options
+                "jsx": "react-jsx",
+                "verbatimModuleSyntax": true,
+                "isolatedModules": true,
+                "moduleDetection": "force",
+                "skipLibCheck": true
+            },
+            "include": ["src"],
+            "exclude": ["node_modules"]
+        }`,
+	);
+}
+async function setupReactViteESLintConfig(rootPath: string) {
+	const eslintConfigPath = path.join(rootPath, "eslint.config.js");
+
+	await writeFile(
+		eslintConfigPath,
+		`import js from '@eslint/js';
+        import globals from 'globals';
+        import reactHooks from 'eslint-plugin-react-hooks';
+        import reactRefresh from 'eslint-plugin-react-refresh';
+        import tseslint from 'typescript-eslint';
+        import reactX from 'eslint-plugin-react-x';
+        import reactDom from 'eslint-plugin-react-dom';
+        import { defineConfig, globalIgnores } from 'eslint/config';
+        
+        export default defineConfig([
+            globalIgnores(['dist']),
+            {   
+                files: ['**/*.{ts,tsx}'],
+                extends: [
+                    js.configs.recommended,
+                    tseslint.configs.recommended,
+                    tseslint.configs.strictTypeChecked,
+                    tseslint.configs.stylisticTypeChecked,
+                    reactHooks.configs.flat.recommended,
+                    reactRefresh.configs.vite,
+                    reactX.configs['recommended-typescript'],
+                    reactDom.configs.recommended,
+                ],
+                languageOptions: {
+                    parserOptions: {
+                        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+                        tsconfigRootDir: import.meta.dirname,
+                    },
+                    ecmaVersion: 2020,
+                    globals: globals.browser,
+                },
+            },
+        ])`,
+	);
+}
+async function addReactViteScriptsToPackageJson(rootPath: string) {
+	const packageJsonPath = path.join(rootPath, "package.json");
+
+	const packageStr = await readFile(packageJsonPath, "utf-8");
+	const packageJson = JSON.parse(packageStr);
+
+	packageJson.scripts ??= {};
+
+	packageJson.scripts.format = "prettier . --write";
+	packageJson.scripts.test = "vitest";
+
+	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
+}
+
+// --- NEXT FUNCTIONS --- 
+async function setupNextTsConfig(rootPath: string) {
 	const tsConfig = path.join(rootPath, "tsconfig.json");
 
 	await writeFile(
@@ -710,204 +906,9 @@ async function setupNextTsConfig(rootPath: string): Promise<void> {
         }`,
 	);
 }
-
-async function setupReactViteTsConfig(rootPath: string): Promise<void> {
-	const appTsConfig = path.join(rootPath, "tsconfig.app.json");
-
-	await writeFile(
-		appTsConfig,
-		`{
-            "compilerOptions": {
-                // vite
-                "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-                "target": "ES2022",
-                "useDefineForClassFields": true,
-                "lib": ["ES2022", "DOM", "DOM.Iterable"],
-                "module": "ESNext",
-                "types": ["vite/client", "vitest/globals"],
-                "moduleResolution": "bundler",
-                "allowImportingTsExtensions": true,
-                "noEmit": true,        
-                "erasableSyntaxOnly": true,
-
-                // type checking
-                "allowUnreachableCode": false,
-                "allowUnusedLabels": false,
-                "exactOptionalPropertyTypes": true,
-                "noFallthroughCasesInSwitch": true,
-                "noImplicitReturns": true,
-                "noImplicitOverride": true,
-                "noPropertyAccessFromIndexSignature": false,
-                "noUncheckedIndexedAccess": false,
-                "noUnusedLocals": true,
-                "noUnusedParameters": true,
-                "strict": true,
-
-                // dirs
-                "rootDir": "./src",
-                "outDir": "./dist",
-
-                // modules
-                "noUncheckedSideEffectImports": true,
-                "esModuleInterop": true,
-                "allowSyntheticDefaultImports": true,
-
-                // emit
-                "declaration": true,
-                "declarationMap": true,
-                "sourceMap": true,
-
-                // other options
-                "jsx": "react-jsx",
-                "verbatimModuleSyntax": true,
-                "isolatedModules": true,
-                "moduleDetection": "force",
-                "skipLibCheck": true
-            },
-            "include": ["src"],
-            "exclude": ["node_modules"]
-        }`,
-	);
-}
-
-async function setupESLintConfig(rootPath: string): Promise<void> {
-	const eslintConfigPath = path.join(rootPath, "eslint.config.js");
-
-	await writeFile(
-		eslintConfigPath,
-		`import js from '@eslint/js';
-        import globals from 'globals';
-        import reactHooks from 'eslint-plugin-react-hooks';
-        import reactRefresh from 'eslint-plugin-react-refresh';
-        import tseslint from 'typescript-eslint';
-        import reactX from 'eslint-plugin-react-x';
-        import reactDom from 'eslint-plugin-react-dom';
-        import { defineConfig, globalIgnores } from 'eslint/config';
-        
-        export default defineConfig([
-            globalIgnores(['dist']),
-            {   
-                files: ['**/*.{ts,tsx}'],
-                extends: [
-                    js.configs.recommended,
-                    tseslint.configs.recommended,
-                    tseslint.configs.strictTypeChecked,
-                    tseslint.configs.stylisticTypeChecked,
-                    reactHooks.configs.flat.recommended,
-                    reactRefresh.configs.vite,
-                    reactX.configs['recommended-typescript'],
-                    reactDom.configs.recommended,
-                ],
-                languageOptions: {
-                    parserOptions: {
-                        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                        tsconfigRootDir: import.meta.dirname,
-                    },
-                    ecmaVersion: 2020,
-                    globals: globals.browser,
-                },
-            },
-        ])`,
-	);
-}
-
-async function addScriptsToPackageJson(rootPath: string): Promise<void> {
-	const packageJsonPath = path.join(rootPath, "package.json");
-
-	const packageStr = await readFile(packageJsonPath, "utf-8");
-	const packageJson = JSON.parse(packageStr);
-
-	packageJson.scripts ??= {};
-
-	packageJson.scripts.format = "prettier . --write";
-	packageJson.scripts.test = "vitest";
-
-	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
-}
-
-async function createNextProject(): Promise<void> {
-	const data: Record<"dirName" | "title" | "desc", string> = await prompts([
-		{
-			type: "text",
-			name: "dirName",
-			message: kleur.reset().white("Type in your project's directory name:"),
-			initial: "my-app",
-			validate: (str: string) =>
-				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
-		},
-		{
-			type: "text",
-			name: "title",
-			message: kleur.reset().white("Type in your project's HTML title:"),
-			initial: "My App",
-			validate: (str: string) =>
-				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
-		},
-		{
-			type: "text",
-			name: "desc",
-			message: kleur.reset().white("Type in your project's HTML description:"),
-			initial: "App built with Create Next App",
-			validate: (str: string) =>
-				!str.trim() ? kleur.reset().red().bold("Value cannot be empty") : true,
-		},
-	]);
-
-	if (!data.dirName || !data.title || !data.desc) {
-		logMessage("Incomplete data. Aborting process");
-		process.exit(1);
-	}
-
-	await initializeNextProject(data.dirName);
-
-	const rootPath = path.resolve(process.cwd(), data.dirName);
-	logMessage(`Project location: ${rootPath}`);
-
-	await installMainDependencies(rootPath);
-	logMessage("Installed main dependencies");
-
-	await installAdditionalNextDependencies(rootPath);
-	logMessage("Installed additional dev dependencies");
-
-	await deletePremadeNextFiles(rootPath);
-	logMessage("Deleted pre-configured files and folders");
-
-	await setTailwindAndRootPageDefaults(rootPath);
-	logMessage("Set up tailwind and cleaned up page.tsx");
-
-	await editLayoutMetadata(rootPath, data.title, data.desc);
-	logMessage(
-		"Edited HTML to match title and description with provided values",
-	);
-
-	await setupPrettier(rootPath);
-	logMessage("Configured Prettier settings");
-
-	await setupESLintForPrettier(rootPath);
-	logMessage("Configured ESLint for Prettier");
-
-	await setupNextTsConfig(rootPath);
-	logMessage("Configured TypeScript config rules");
-
-	await addFormatScriptToPackageJson(rootPath);
-	logMessage("Added format script to package.json");
-
-	await addTypeModuleToPackageJson(rootPath);
-	logMessage("Added type module to package.json");
-
-	await fixCSSImportError(rootPath);
-	logMessage("Fixed TS error for globals.css import");
-
-	await formatAllFiles(rootPath);
-	logMessage("Formatted all files");
-
-	await initializeGitRepoAndCommit(rootPath);
-	logMessage("Scaffolding process finished successfully.");
-}
-
 async function installAdditionalNextDependencies(
 	rootPath: string,
-): Promise<void> {
+) {
 	await execa(
 		"bun",
 		[
@@ -923,8 +924,7 @@ async function installAdditionalNextDependencies(
 		},
 	);
 }
-
-async function initializeNextProject(dirName: string): Promise<void> {
+async function initializeNextProject(dirName: string) {
 	await execa("bunx", [
 		"create-next-app@latest",
 		dirName,
@@ -932,8 +932,7 @@ async function initializeNextProject(dirName: string): Promise<void> {
 		"--skip-install",
 	]);
 }
-
-async function deletePremadeNextFiles(rootPath: string): Promise<void> {
+async function deletePremadeNextFiles(rootPath: string) {
 	const publicPath = path.join(rootPath, "public");
 	await rm(publicPath, {
 		recursive: true,
@@ -952,36 +951,11 @@ async function deletePremadeNextFiles(rootPath: string): Promise<void> {
 		force: true,
 	});
 }
-
-async function addFormatScriptToPackageJson(rootPath: string): Promise<void> {
-	const packageJsonPath = path.join(rootPath, "package.json");
-
-	const packageStr = await readFile(packageJsonPath, "utf-8");
-	const packageJson = JSON.parse(packageStr);
-
-	packageJson.scripts ??= {};
-
-	packageJson.scripts.format = "prettier . --write";
-
-	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
-}
-
-async function addTypeModuleToPackageJson(rootPath: string): Promise<void> {
-	const packageJsonPath = path.join(rootPath, "package.json");
-
-	const packageStr = await readFile(packageJsonPath, "utf-8");
-	const packageJson = JSON.parse(packageStr);
-
-	packageJson.type = "module";
-
-	await writeFile(packageJsonPath, JSON.stringify(packageJson) + "\n");
-}
-
-async function editLayoutMetadata(
+async function editNextLayoutMetadata(
 	rootPath: string,
 	title: string,
 	desc: string,
-): Promise<void> {
+) {
 	const layoutPath = path.join(rootPath, "app", "layout.tsx");
 	const layoutStr = await readFile(layoutPath, "utf-8");
 
@@ -993,8 +967,7 @@ async function editLayoutMetadata(
 
 	await writeFile(layoutPath, updatedDesc);
 }
-
-async function fixCSSImportError(rootPath: string) {
+async function fixNextCSSImportError(rootPath: string) {
 	await mkdir(path.resolve(rootPath, "types"), {
 		recursive: true,
 	});
@@ -1010,8 +983,7 @@ async function fixCSSImportError(rootPath: string) {
         }`,
 	);
 }
-
-async function setTailwindAndRootPageDefaults(rootPath: string): Promise<void> {
+async function setNextTailwindAndRootPageDefaults(rootPath: string) {
 	const pagePath = path.join(rootPath, "app", "page.tsx");
 	await writeFile(
 		pagePath,
