@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import { execa, ExecaError } from "execa";
 import prompts from "prompts";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { rm } from "fs/promises";
@@ -107,20 +107,33 @@ async function initializeReactViteProject() {
 		process.exit(1);
 	}
 
-	await initializeReactWithVite(path.resolve(process.cwd()), name);
+    try {
+	    await initializeReactWithVite(path.resolve(process.cwd()), name);
+    } catch(e) {
+        logError(
+            "Fatal error: initial scaffolding command failed",
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	const rootPath = path.resolve(process.cwd(), name);
 	logMessage(`Project location: ${rootPath}`);
 
-	await scaffoldReactViteProject(rootPath, name);
+    try {
+        await scaffoldReactViteProject(rootPath, name);
+    } catch(e) {
+        logError(
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./${name}\nbun install\nbun add --dev @tailwindcss/vite prettier eslint-config-prettier eslint-plugin-react-x eslint-plugin-react-dom vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event\nbun format`,
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
 }
 async function scaffoldReactViteProject(rootPath: string, name: string) {
-	await installMainDependencies(rootPath);
-	logMessage("Frontend: Installed main dependencies");
-
 	await deletePremadeReactViteFiles(rootPath);
 	logMessage("Frontend: Deleted pre-configured files and folders");
 
@@ -129,9 +142,6 @@ async function scaffoldReactViteProject(rootPath: string, name: string) {
 
 	await setupESLintForPrettier(rootPath);
 	logMessage("Frontend: Configured ESLint for Prettier");
-
-	await installAdditionalReactViteDependencies(rootPath);
-	logMessage("Frontend: Installed additional dev dependencies");
 
 	await setupReactViteTailwindImports(rootPath);
 	logMessage("Frontend: Changed tailwind imports on index.css");
@@ -157,6 +167,12 @@ async function scaffoldReactViteProject(rootPath: string, name: string) {
 	await addReactViteScriptsToPackageJson(rootPath);
 	logMessage("Frontend: Added format and test to package.json scripts");
 
+    await installMainDependencies(rootPath);
+	logMessage("Frontend: Installed main dependencies");
+
+	await installAdditionalReactViteDependencies(rootPath);
+	logMessage("Frontend: Installed additional dev dependencies");
+    
 	await formatAllFiles(rootPath);
 	logMessage("Frontend: Formatted all files");
 }
@@ -176,7 +192,15 @@ async function initializeExpressProject() {
 
 	const rootPath = path.resolve(process.cwd(), name);
 
-	await scaffoldExpressProject(rootPath, "");
+    try {
+        await scaffoldExpressProject(rootPath, "");
+    } catch(e) {
+        logError(
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./${name}\nbun add bcryptjs cookie-parser dotenv jsonwebtoken pg express\nbun add --dev @types/cookie-parser @types/express @types/jsonwebtoken @types/node @types/pg prettier tsx typescript\nbun format`,
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
@@ -193,12 +217,6 @@ async function scaffoldExpressProject(rootPath: string, name: string) {
 	await initializeDefaultPackageJson(backendPath);
 	logMessage("Backend: Initialized package.json");
 
-	await installExpressDeps(backendPath);
-	logMessage("Backend: Installed main dependencies");
-
-	await installExpressDevDeps(backendPath);
-	logMessage("Backend: Installed additional dev dependencies");
-
 	await setUpExpressDefaultFiles(backendPath);
 	logMessage("Backend: Added default files");
 
@@ -213,6 +231,12 @@ async function scaffoldExpressProject(rootPath: string, name: string) {
 
 	await setupExpressPackageJson(backendPath);
 	logMessage("Backend: Added package.json scripts and type: module");
+
+    await installExpressDeps(backendPath);
+	logMessage("Backend: Installed main dependencies");
+
+	await installExpressDevDeps(backendPath);
+	logMessage("Backend: Installed additional dev dependencies");
 
 	await formatAllFiles(backendPath);
 	logMessage("Backend: Formatted all files");
@@ -238,13 +262,37 @@ async function initializeReactExpressProject() {
 	});
 	logMessage(`Project location: ${rootPath}`);
 
-	await initializeReactWithVite(rootPath, "frontend");
+    try {
+	    await initializeReactWithVite(rootPath, "frontend");
+    } catch(e) {
+        logError(
+            "Fatal error: initial scaffolding command failed",
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	const frontendPath = path.resolve(rootPath, "frontend");
 
-	await scaffoldReactViteProject(frontendPath, "frontend");
+    try {
+        await scaffoldReactViteProject(frontendPath, "frontend");
+    } catch(e) {
+        logError(
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./frontend\nbun install\nbun add --dev @tailwindcss/vite prettier eslint-config-prettier eslint-plugin-react-x eslint-plugin-react-dom vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event\nbun format`,
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
-	await scaffoldExpressProject(rootPath, "backend");
+    try {
+        await scaffoldExpressProject(rootPath, "backend");        
+    } catch(e) {
+        logError(
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./backend\nbun add bcryptjs cookie-parser dotenv jsonwebtoken pg express\nbun add --dev @types/cookie-parser @types/express @types/jsonwebtoken @types/node @types/pg prettier tsx typescript\nbun format`,
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
@@ -282,16 +330,19 @@ async function scaffoldNextProject() {
 		process.exit(1);
 	}
 
-	await initializeNextProject(data.dirName);
+    try {
+        await initializeNextProject(data.dirName);
+    } catch(e) {
+        logError(
+            "Fatal error: initial scaffolding command failed",
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	const rootPath = path.resolve(process.cwd(), data.dirName);
 	logMessage(`Project location: ${rootPath}`);
 
-	await installMainDependencies(rootPath);
-	logMessage("Installed main dependencies");
-
-	await installAdditionalNextDependencies(rootPath);
-	logMessage("Installed additional dev dependencies");
 
 	await deletePremadeNextFiles(rootPath);
 	logMessage("Deleted pre-configured files and folders");
@@ -322,8 +373,22 @@ async function scaffoldNextProject() {
 	await fixNextCSSImportError(rootPath);
 	logMessage("Fixed TS error for globals.css import");
 
-	await formatAllFiles(rootPath);
-	logMessage("Formatted all files");
+    try {
+        await installMainDependencies(rootPath);
+        logMessage("Installed main dependencies");
+
+        await installAdditionalNextDependencies(rootPath);
+        logMessage("Installed additional dev dependencies");
+
+        await formatAllFiles(rootPath);
+        logMessage("Formatted all files");
+    } catch(e) {
+        logError(
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./${data.dirName}\nbun install\nbun add --dev prettier eslint-config-prettier eslint-plugin-prettier\nbun format`,
+            (e as ExecaError).message,
+        );
+        process.exit();
+    }
 
 	await initializeGitRepoAndCommit(rootPath);
 	logMessage("Scaffolding process finished successfully.");
@@ -332,6 +397,10 @@ async function scaffoldNextProject() {
 // --- UTILITY FUNCTIONS ---
 function logMessage(message: string) {
 	console.log(`> ${message}`);
+}
+function logError(customMessage: string, errorMessage: string) {
+    console.error(`> ${customMessage}`);
+    console.error(`> Cause of error: ${errorMessage}`);
 }
 
 // --- CROSS-PROJECT FUNCTIONS ---
