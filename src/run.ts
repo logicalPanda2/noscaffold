@@ -14,7 +14,7 @@ export default async function run(): Promise<void> {
         | \\| \\__/ .__/ \\__, /~~\\ |    |    \\__/ |___ |__/                                      
         `
     );
-    let lastCursor = -1; 
+
 	const { option }: { option: ProjectOption } = await prompts({
 		type: "select",
 		name: "option",
@@ -40,15 +40,39 @@ export default async function run(): Promise<void> {
         onRender(kleur) {
             const obj = this as any;
             obj.msg = kleur.reset("Choose a project to scaffold:");
-
-            if(obj.cursor === lastCursor)
-
-            lastCursor = obj.cursor;
             obj.hint = "Use arrow keys. Enter to select.";
-            obj.choices[0].title = obj.cursor === 0 ? `${kleur.reset().cyan("React")}${kleur.reset().white(` + `)}${kleur.reset().magenta("Vite")}` : kleur.reset().gray("React + Vite");
-            obj.choices[1].title = obj.cursor === 1 ? kleur.reset().white("Next.js") : kleur.reset().gray("Next.js");
-            obj.choices[2].title = obj.cursor === 2 ? `${kleur.reset().cyan("React")}${kleur.reset().white(` + `)}${kleur.reset().yellow("Express")}` : kleur.reset().gray("React + Express");
-            obj.choices[3].title = obj.cursor === 3 ? kleur.reset().yellow("Express") : kleur.reset().gray("Express");
+
+            obj.choices[0].title =
+                obj.cursor === 0 
+                ? `${
+                        kleur.reset().cyan("React")
+                    }${
+                        kleur.reset().white(` + `)
+                    }${
+                        kleur.reset().magenta("Vite")
+                    }` 
+                : kleur.reset().gray("React + Vite");
+
+            obj.choices[1].title =
+                obj.cursor === 1
+                ? kleur.reset().white("Next.js")
+                : kleur.reset().gray("Next.js");
+
+            obj.choices[2].title =
+                obj.cursor === 2 
+                ? `${
+                        kleur.reset().cyan("React")
+                    }${
+                        kleur.reset().white(` + `)
+                    }${
+                        kleur.reset().yellow("Express")
+                    }`
+                : kleur.reset().gray("React + Express");
+
+            obj.choices[3].title = 
+                obj.cursor === 3 
+                ? kleur.reset().yellow("Express")
+                : kleur.reset().gray("Express");
         },
 		initial: 0,
 	});
