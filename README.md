@@ -60,14 +60,12 @@ Wait until the scaffolding process has finished, indicated by the following mess
 > Scaffolding process finished successfully.
 ```
 
-## 1.1.0 Release Notes
+## 1.1.2 Release Notes
 
 Changes:
 
-1. **New option to scaffold React + Express projects**
-2. Overall DX improvement
-3. Interface rework
-4. Bonus: New option to scaffold Express projects
+1. Part of functions refactored
+2. Better error handling
 
 ### Note on older versions
 
