@@ -384,7 +384,7 @@ async function scaffoldNextProject() {
         logMessage("Formatted all files");
     } catch(e) {
         logError(
-            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./${data.dirName}\nbun install\nbun add --dev prettier eslint-config-prettier eslint-plugin-prettier\nbun format`,
+            `Error: dependency installation failed.\nPlease move to the project directory and retry the installation:\ncd ./${data.dirName}\nbun install\nbun add pg next-auth@beta\nbun add --dev prettier eslint-config-prettier eslint-plugin-prettier typescript @types/node @types/pg`,
             (e as ExecaError).message,
         );
         process.exit();
@@ -968,6 +968,19 @@ async function setupNextTsConfig(rootPath: string) {
 	);
 }
 async function installAdditionalNextDependencies(rootPath: string) {
+    await execa(
+		"bun",
+		[
+			"add",
+			"pg",
+            "next-auth@beta",
+		],
+		{
+			cwd: rootPath,
+			stdio: "inherit",
+		},
+	);
+
 	await execa(
 		"bun",
 		[
@@ -976,6 +989,10 @@ async function installAdditionalNextDependencies(rootPath: string) {
 			"prettier",
 			"eslint-config-prettier",
 			"eslint-plugin-prettier",
+            "typescript",
+            "tsx",
+            "@types/node",
+            "@types/pg",
 		],
 		{
 			cwd: rootPath,
