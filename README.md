@@ -24,7 +24,7 @@ It speeds up the setup process by:
 
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [1.1.2 Release Notes](#112-release-notes)
+3. [1.1.4 Patch Notes](#114-patch-notes)
 4. [License](#license)
 
 ## Installation
@@ -60,12 +60,13 @@ Wait until the scaffolding process has finished, indicated by the following mess
 > Scaffolding process finished successfully.
 ```
 
-## 1.1.2 Release Notes
+## 1.1.4 Patch Notes
 
 Changes:
 
-1. Part of functions refactored
-2. Better error handling
+1. Next.js projects now correctly install TypeScript and Postgres dependencies
+2. Part of functions refactored
+3. Better error handling
 
 ### Note on older versions
 
