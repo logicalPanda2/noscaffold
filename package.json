@@ -1,6 +1,6 @@
 {
 	"name": "noscaffold",
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"description": "Opinionated CLI automation tool for scaffolding various kinds of React projects.",
 	"license": "MIT",
 	"author": "logicalPanda2",
